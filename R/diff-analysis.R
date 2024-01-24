@@ -124,27 +124,3 @@ diff_metabolites <- function(abundance,
 
   return(res)
 }
-
-# ropls_plot_invisible <- function(...) {
-#   ff <- tempfile()
-#   png(filename = ff)
-#   on.exit(dev.off())
-#   on.exit(unlink(ff))
-#   res <- roplsMini::opls(...)
-#   res
-# }
-
-library(ggplot2)
-g <- ggplot(mpg, aes(class))
-# Number of cars in each class:
-g + geom_bar()
-
-
-./configure \
-    --prefix=/home/zimlik/Data/Tools/R-4.3.2/ \
-    --enable-R-shlib \
-    --enable-memory-profiling \
-    --with-blas \
-    --with-lapack \
-    --with-readline=no \
-    --with-x=no
