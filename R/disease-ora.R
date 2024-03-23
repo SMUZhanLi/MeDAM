@@ -3,6 +3,7 @@
 #' @param medam a Pool object connected MeDAM.db
 #' @param doid Disease Ontology ID (DOID).
 #' @importFrom clusterProfiler bitr
+#' @importFrom org.Hs.eg.db org.Hs.eg.db
 #' @details The aliases of disease can be converted to DOID using
 #' \code{\link{disease2doid}}.
 #' @return entrez gene id
@@ -25,7 +26,7 @@ drgene_search <- function(medam, doid) {
     pull(entrezid) |>
     strsplit(split = ",") |>
     unlist()
-  drg <- bitr(drg, "ENTREZID", "SYMBOL", "org.Hs.eg.db") |>
+  drg <- bitr(drg, "ENTREZID", "SYMBOL", org.Hs.eg.db) |>
     as_tibble()
   return(drg)
 }

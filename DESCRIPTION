@@ -24,10 +24,10 @@ Imports:
     flashClust,
     dynamicTreeCut,
     pROC,
-    stringr
-Remotes: 
+    stringr,
+    org.Hs.eg.db
+Remotes:
     SMUZhanLi/roplsMini,
     rstudio/pool
-Suggests: 
-    org.Hs.eg.db,
+Suggests:
     pool (>= 1.0.1.9000)
