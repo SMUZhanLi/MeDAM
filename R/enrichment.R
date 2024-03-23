@@ -32,6 +32,7 @@ enrichment <- function(nodes,
                TERM2GENE = gsid2gene,
                TERM2NAME = gsid2name)
     })
+    names(res) <- ont
     res <- lapply(res, entrez2gename, iprot = iprot)
   }
   return(res)
