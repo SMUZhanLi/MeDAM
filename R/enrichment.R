@@ -6,9 +6,7 @@
 #' "bonferroni", "BH", "BY", "fdr", "none".
 #' @param pcutoff 0.05.
 #' @param ont c("BP", "MF", "CC", "KEGG", "WikiPathways", "Reactome", "DO").
-#' @importFrom clusterProfiler enrichGO enricher
-#' @importFrom ReactomePA enrichPathway
-#' @importFrom DOSE enrichDO
+#' @importFrom clusterProfiler enricher
 #' @return A \code{\link[DOSE]{enrichResult-class}} instance for GO-BP, GO-MF,
 #' GO-CC, KEGG, WikiPathways, Reactome and DO (Disease Ontology) enrichment
 #' analysis.
@@ -21,53 +19,23 @@ enrichment <- function(nodes,
                        pcutoff = 0.05,
                        ont = c("BP", "MF", "CC", "KEGG",
                                "WikiPathways", "Reactome", "DO")) {
-  res <- vector("list", length(ont))
-  names(res) <- ont
   if (!is.null(nodes)) {
     iprot <- nodes |> filter(type == "protein")
     entrezid <- pull(iprot, external)
-    for (x in c("BP", "MF", "CC")) {
-      if (x %in% ont) {
-        res[[x]] <- enrichGO(entrezid,
-                        OrgDb = "org.Hs.eg.db",
-                        ont = x,
-                        pAdjustMethod = padj,
-                        pvalueCutoff = pcutoff,
-                        qvalueCutoff = 1)
-        # res[[x]] <- simplify(ego)
-      }
-    }
-    if ("KEGG" %in% ont) {
-      res$KEGG <- enricher(entrezid,
-                           pAdjustMethod = padj,
-                           pvalueCutoff = pcutoff,
-                           qvalueCutoff = 1,
-                           gson = kegg_gson_hsa)
-    }
-    if ("WikiPathways" %in% ont) {
-      res$WikiPathways <- enricher(entrezid,
-                                   pAdjustMethod = padj,
-                                   pvalueCutoff = pcutoff,
-                                   qvalueCutoff = 1,
-                                   gson = wp_gson_homo)
-    }
-    if ("Reactome" %in% ont) {
-      res$Reactome <- enrichPathway(entrezid,
-                                    pAdjustMethod = padj,
-                                    pvalueCutoff = pcutoff,
-                                    qvalueCutoff = 1)
-    }
-    if ("DO" %in% ont) {
-      res$DO <- enrichDO(entrezid,
-                         pAdjustMethod = padj,
-                         pvalueCutoff = pcutoff,
-                         qvalueCutoff = 1)
-    }
+    res <- lapply(ont, function(term) {
+      gsid2gene <- medam_terms[[term]]$gsid2gene
+      gsid2name <- medam_terms[[term]]$gsid2name
+      enricher(entrezid,
+               pAdjustMethod = padj,
+               pvalueCutoff = pcutoff,
+               qvalueCutoff = 1,
+               TERM2GENE = gsid2gene,
+               TERM2NAME = gsid2name)
+    })
     res <- lapply(res, entrez2gename, iprot = iprot)
   }
   return(res)
 }
-
 
 ## Convert entrez gene id to gene symbol for \code{enrichResult}.
 #' @keywords internal
