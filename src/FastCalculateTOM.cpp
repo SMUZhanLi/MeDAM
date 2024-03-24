@@ -7,8 +7,9 @@ using namespace Rcpp;
 using namespace std;
 
 // [[Rcpp::export]]
-Rcpp::NumericMatrix  TOMsimilarity_parallel( Rcpp::NumericMatrix  Adjacency_Matrix_Rcpp_NumericMatrix )
+Rcpp::NumericMatrix  TOMsimilarity_parallel( Rcpp::NumericMatrix  Adjacency_Matrix_Rcpp_NumericMatrix, const int number_of_threads)
 {
+    omp_set_num_threads(number_of_threads);
     long int total_gene_number = Adjacency_Matrix_Rcpp_NumericMatrix.nrow();
     double ** array_2_dimension_adjacency = new double * [ total_gene_number ];
     for( long int i = 0 ; i<= total_gene_number-1 ; i++)

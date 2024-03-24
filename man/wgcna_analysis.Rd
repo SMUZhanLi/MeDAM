@@ -9,7 +9,8 @@ wgcna_analysis(
   networkType = "signed",
   corMethod = "spearman",
   minModuleSize = 5,
-  cutHeight = 0.25
+  cutHeight = 0.25,
+  number_of_threads = 10
 )
 }
 \arguments{
@@ -26,6 +27,8 @@ metabolites and rows ar samples.}
 
 \item{cutHeight}{Maximum dissimilarity (i.e., 1-correlation) that qualifies
 modules for merging.}
+
+\item{number_of_threads}{Default 10.}
 }
 \value{
 A \code{tibble} combined metabolites and modules.

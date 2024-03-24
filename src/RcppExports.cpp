@@ -12,19 +12,20 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // TOMsimilarity_parallel
-Rcpp::NumericMatrix TOMsimilarity_parallel(Rcpp::NumericMatrix Adjacency_Matrix_Rcpp_NumericMatrix);
-RcppExport SEXP _MeDAM_TOMsimilarity_parallel(SEXP Adjacency_Matrix_Rcpp_NumericMatrixSEXP) {
+Rcpp::NumericMatrix TOMsimilarity_parallel(Rcpp::NumericMatrix Adjacency_Matrix_Rcpp_NumericMatrix, const int number_of_threads);
+RcppExport SEXP _MeDAM_TOMsimilarity_parallel(SEXP Adjacency_Matrix_Rcpp_NumericMatrixSEXP, SEXP number_of_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type Adjacency_Matrix_Rcpp_NumericMatrix(Adjacency_Matrix_Rcpp_NumericMatrixSEXP);
-    rcpp_result_gen = Rcpp::wrap(TOMsimilarity_parallel(Adjacency_Matrix_Rcpp_NumericMatrix));
+    Rcpp::traits::input_parameter< const int >::type number_of_threads(number_of_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(TOMsimilarity_parallel(Adjacency_Matrix_Rcpp_NumericMatrix, number_of_threads));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_MeDAM_TOMsimilarity_parallel", (DL_FUNC) &_MeDAM_TOMsimilarity_parallel, 1},
+    {"_MeDAM_TOMsimilarity_parallel", (DL_FUNC) &_MeDAM_TOMsimilarity_parallel, 2},
     {NULL, NULL, 0}
 };
 
