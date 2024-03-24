@@ -1,0 +1,37 @@
+Package: MeDAM
+Title: extrapolation of potential Metabolite-Disease Associations by Mining biomedical knowledge
+Version: 1.0
+Authors@R: person(given = "Li", family = "Zhan", email = "smu18575877413@gmail.com",
+  role = c("aut", "cre"), comment = c(ORCID = "0009-0003-7470-7586"))
+Description: MeDAM is a complementary bioinformatic pipeline, which is base on
+  biomedical knowledge discovery to effectively infer the potential functions of
+  understudied metabolites associated with diseases for further investigation.
+License: GPL (>= 3.0)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
+Depends:
+    R (>= 4.3)
+Imports:
+    clusterProfiler,
+    stats,
+    tidyr,
+    dplyr,
+    WGCNA,
+    roplsMini (>= 1.0),
+    digest,
+    tibble,
+    flashClust,
+    dynamicTreeCut,
+    pROC,
+    stringr,
+    org.Hs.eg.db,
+    Rcpp (>= 1.0.12)
+Remotes:
+    SMUZhanLi/roplsMini,
+    rstudio/pool
+Suggests:
+    pool (>= 1.0.1.9000)
+LinkingTo:
+    Rcpp,
+    RcppArmadillo
