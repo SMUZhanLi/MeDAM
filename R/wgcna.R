@@ -10,7 +10,7 @@
 #' @param minModuleSize Minimum size of module or cluster, default is 5.
 #' @param cutHeight Maximum dissimilarity (i.e., 1-correlation) that qualifies
 #' modules for merging.
-#' @param number_of_threads Default 10.
+#' @param nthreads Default 10.
 #' @importFrom WGCNA enableWGCNAThreads disableWGCNAThreads pickSoftThreshold
 #' adjacency mergeCloseModules
 #' @importFrom dynamicTreeCut cutreeDynamic
@@ -29,9 +29,9 @@ wgcna_analysis <- function(abundance,
                           corMethod = "spearman",
                           minModuleSize = 5,
                           cutHeight = 0.25,
-                          number_of_threads = 10) {
+                          nthreads = 10) {
   powers <- c(1:10, seq(12, 30, 2))
-  enableWGCNAThreads(number_of_threads)
+  enableWGCNAThreads(nthreads)
   sft <- pickSoftThreshold(abundance,
                            powerVector = powers,
                            networkType = networkType)
@@ -42,7 +42,7 @@ wgcna_analysis <- function(abundance,
                       type = networkType,
                       corFnc = "cor",
                       corOptions = list(method = corMethod))
-  TOM <- TOMsimilarity_parallel(adjMat, number_of_threads)
+  TOM <- TOMsimilarity_parallel(adjMat, nthreads)
   dissTOM <- 1 - TOM
   metaboTree <- flashClust(as.dist(dissTOM), method = "complete")
   moduleLabels <- cutreeDynamic(dendro = metaboTree,
