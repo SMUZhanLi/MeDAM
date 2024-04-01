@@ -132,6 +132,7 @@ stitch_network <- function(medam, stitchid, score = 700) {
             node1 %in% !!stitchid,
             score >= !!score) |>
     mutate(type = "cpi")
+  stitchid <- cpi |> pull(node1) |> unique()
   cci <- medam |>
     dbquery("stitchv5cci",
             node1 %in% !!stitchid,
@@ -139,7 +140,7 @@ stitch_network <- function(medam, stitchid, score = 700) {
             score >= !!score) |>
     mutate(type = "cci")
 
-  stringid <- cpi$node2
+  stringid <- cpi |> pull(node2) |> unique()
   ppi <- medam |>
     dbquery("stringv10p5ppi",
             node1 %in% !!stringid,
