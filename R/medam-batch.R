@@ -89,9 +89,9 @@ medam_batch <- function(medam,
   daa <- daa |>
     left_join(c2cid, by = c("metabolite" = "compound"))
 
-  tgtp_nw <- target_proteins_batch(medam, daa, score, ecpi_score)
-  coabm_nw <- coab_metabolites_batch(medam, daa, score)
-  ssimm_nw <- ssim_metabolites_batch(medam, daa, score)
+  tgtp_nw <- medam_tgtp_batch(medam, daa, score, ecpi_score)
+  coabm_nw <- medam_coabm_batch(medam, daa, score)
+  ssimm_nw <- medam_ssimm_batch(medam, daa, score)
   all_network <- list(target_proteins = tgtp_nw,
                       coab_metabolites = coabm_nw,
                       ssim_metabolites = ssimm_nw)
@@ -114,67 +114,6 @@ medam_batch <- function(medam,
   return(res)
 }
 
-## target proteins batch
-#' @importFrom dplyr group_map
-#' @keywords internal
-target_proteins_batch <- function(medam, dat, score, ecpi_score) {
-  dat <- dat |> filter(significant == 1)
-  stitchid <- dat |> pull(stitch)
-  ecpi <- stitch_expt_cpi(medam, stitchid, ecpi_score)
-  arm1_search <- ecpi |>
-    group_by(stitchv5) |>
-    group_map(~ list(key = .y, nw = string_network(medam, .x$stringv12, score)))
-  key <- lapply(arm1_search, "[[", "key")
-  nw <- lapply(arm1_search, "[[", "nw")
-  names(nw) <- unlist(key)
-  res <- lapply(stitchid, function(x) {
-    nw[[x]]
-  })
-  names(res) <- pull(dat, metabolite)
-  return(res)
-}
-
-
-## co-abundance metabolites batch
-#' @keywords internal
-coab_metabolites_batch <- function(medam, dat, score) {
-  biomk2mod <- dat |>
-    filter(significant == 1)
-  modmk <- biomk2mod |> pull(module) |> unique()
-  arm2b1_search <- dat |>
-    filter(module %in% modmk) |>
-    group_by(module) |>
-    group_map(~ list(key = .y, nw = stitch_network(medam, .x$stitch, score)))
-  key <- lapply(arm2b1_search, "[[", "key")
-  nw <- lapply(arm2b1_search, "[[", "nw")
-  names(nw) <- unlist(key)
-  res <- pull(biomk2mod, module) |>
-    lapply(function(m) {
-      nw[[m]]
-    })
-  names(res) <- pull(biomk2mod, metabolite)
-  return(res)
-}
-
-## structural similar metabolites metabolites batch
-#' @keywords internal
-ssim_metabolites_batch <- function(medam, dat, score) {
-  dat <- dat |> filter(significant == 1)
-  cid <- dat |> pull(cid)
-  c2ssimcid <- ssim_search(medam, cid)
-  arm2b2_search <- c2ssimcid |>
-    group_by(cid) |>
-    group_map(~ list(key = .y, nw = stitch_network(medam, .x$stitch, score)))
-  key <- lapply(arm2b2_search, "[[", "key")
-  nw <- lapply(arm2b2_search, "[[", "nw")
-  names(nw) <- unlist(key)
-  res <- lapply(cid, function(x) {
-    nw[[x]]
-  })
-  names(res) <- dat |> pull(metabolite)
-  return(res)
-}
-
 ## drgora batch
 #' @importFrom tibble rownames_to_column as_tibble
 #' @importFrom dplyr rename_at vars
@@ -191,4 +130,109 @@ drgora_batch <- function(network, prefix, drg, universe) {
     select(1:4, 6, 5) |>
     rename_at(vars(-metabolite), ~ paste0(prefix, .x))
   return(drgora)
+}
+
+# target proteins batch
+#' @keywords internal
+medam_tgtp_batch <- function(medam, dat, score, ecpi_score) {
+  sdat <- dat |> filter(significant == 1)
+  c2tgtp <- sdat |>
+    pull(stitch) |>
+    stitch_expt_cpi(medam, stitchid = _, ecpi_score) |>
+    rename(stitch = 1) |>
+    right_join(sdat, by = "stitch", relationship = "many-to-many") |>
+    filter(!is.na(stringv12))
+  stringid <- c2tgtp |> pull(stringv12) |> unique()
+  nw <- string_network(medam, stringid, score)
+  c2tgtp <- split(x = c2tgtp$stringv12, f = c2tgtp$metabolite)
+  c2nw <- lapply(c2tgtp, function(tgtpstring) {
+    subppi1 <- nw$edges |>
+      filter(node1 %in% !!tgtpstring | node2 %in% !!tgtpstring)
+    pnode1 <- subppi1 |> pull(node1)
+    pnode2 <- subppi1 |> pull(node2)
+    allnode <- c(pnode1, pnode2) |> unique()
+    nottgtp <- allnode[!allnode %in% tgtpstring]
+    subppi2 <- nw$edges |>
+      filter(node1 %in% !!nottgtp, node2 %in% !!nottgtp)
+    edges <- bind_rows(subppi1, subppi2)
+    nodes <- nw$nodes |>
+      filter(id %in% !!allnode) |>
+      mutate(network = if_else(id %in% tgtpstring, "input", "output"))
+    list(edges = edges, nodes = nodes)
+  })
+  res <- vector("list", nrow(sdat))
+  names(res) <- sdat |> pull(metabolite)
+  for (x in names(c2nw)) {
+    res[[x]] <- c2nw[[x]]
+  }
+  return(res)
+}
+
+## structural similar metabolites metabolites batch
+#' @keywords internal
+medam_ssimm_batch <- function(medam, dat, score) {
+  sdat <- dat |> filter(significant == 1)
+  c2ssimm <- sdat |>
+    pull(cid) |>
+    ssim_search(medam, cid = _) |>
+    rename(ssimstitch = 3) |>
+    right_join(sdat, by = "cid", relationship = "many-to-many") |>
+    select(metabolite, cid, ssimcid, ssimstitch) |>
+    filter(!is.na(ssimstitch))
+  stitchid <- c2ssimm |> pull(ssimstitch) |> unique()
+  nw <- stitch_network(medam, stitchid, score)
+  c2ssimm <- split(x = c2ssimm$ssimstitch, f = c2ssimm$metabolite)
+  c2nw <- lapply(c2ssimm, function(ssimstitch) {
+    subcpi <- nw$edges |> filter(node1 %in% !!ssimstitch, type == "cpi")
+    cnode <- subcpi |> pull(node1) |> unique()
+    subcci <- nw$edges |>
+      filter(node1 %in% !!cnode, node2 %in% !!cnode, type == "cci")
+    pnode <- subcpi |> pull(node2) |> unique()
+    subppi <- nw$edges |>
+      filter(node1 %in% !!pnode, node2 %in% !!pnode, type == "ppi")
+    edges <- bind_rows(subcpi, subcci, subppi)
+    allnode <- c(cnode, pnode)
+    nodes <- nw$nodes |> filter(id %in% !!allnode)
+    list(edges = edges, nodes = nodes)
+  })
+  res <- vector("list", nrow(sdat))
+  names(res) <- sdat |> pull(metabolite)
+  for (x in names(c2nw)) {
+    res[[x]] <- c2nw[[x]]
+  }
+  return(res)
+}
+
+## co-abundance metabolites batch
+#' @keywords internal
+medam_coabm_batch <- function(medam, dat, score) {
+  sdat <- dat |> filter(significant == 1)
+  mod <- sdat |> pull(module) |> unique()
+  stitchid <- dat |>
+    filter(module %in% mod) |>
+    pull(stitch) |>
+    na.omit() |>
+    unique()
+  nw <- stitch_network(medam, stitchid, score)
+  mod2coabm <- dat |>
+    filter(!is.na(stitch), module %in% mod) |>
+    (\(d) split(x = d$stitch, f = d$module))()
+  mod2nw <- lapply(mod2coabm, function(coabm) {
+    subcpi <- nw$edges |> filter(node1 %in% !!coabm, type == "cpi")
+    cnode <- subcpi |> pull(node1) |> unique()
+    subcci <- nw$edges |>
+      filter(node1 %in% !!cnode, node2 %in% !!cnode, type == "cci")
+    pnode <- subcpi |> pull(node2) |> unique()
+    subppi <- nw$edges |>
+      filter(node1 %in% !!pnode, node2 %in% !!pnode, type == "ppi")
+    edges <- bind_rows(subcpi, subcci, subppi)
+    allnode <- c(cnode, pnode)
+    nodes <- nw$nodes |> filter(id %in% !!allnode)
+    list(edges = edges, nodes = nodes)
+  })
+  res <- sdat |>
+    pull(module) |>
+    lapply(function(m) mod2nw[[m]]) 
+  names(res) <- sdat |> pull(metabolite)
+  return(res)
 }
