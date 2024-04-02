@@ -25,7 +25,8 @@ medam_batch(
   corMethod = "spearman",
   minModuleSize = 5,
   cutHeight = 0.25,
-  universe = 21306
+  universe = 21306,
+  nthreads = 1
 )
 }
 \arguments{
@@ -85,6 +86,8 @@ modules for merging.}
 
 \item{universe}{Count of universal background protein-coding genes.
 For example, background of homo sapiens is 21306.}
+
+\item{nthreads}{Default 1.}
 }
 \value{
 a list contained:

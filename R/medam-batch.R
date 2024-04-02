@@ -37,6 +37,7 @@
 #' modules for merging.
 #' @param universe Count of universal background protein-coding genes.
 #' For example, background of homo sapiens is 21306.
+#' @param nthreads Default 1.
 #' @return a list contained:
 #' * \code{daa} Result of the differential abundance analysis for metabolomics.
 #' See \code{\link{diff_metabolites}} and \code{\link{wgcna_analysis}}.
@@ -69,7 +70,8 @@ medam_batch <- function(medam,
                         corMethod = "spearman",
                         minModuleSize = 5,
                         cutHeight = 0.25,
-                        universe = 21306) {
+                        universe = 21306,
+                        nthreads = 1) {
   daa <- diff_metabolites(abundance = abundance,
                           resp = resp,
                           compared = compared,
@@ -82,7 +84,7 @@ medam_batch <- function(medam,
                           auc_cutoff = auc_cutoff,
                           log2fc_cutoff = log2fc_cutoff)
   wgcna <- wgcna_analysis(abundance, networkType, corMethod,
-                          minModuleSize, cutHeight)
+                          minModuleSize, cutHeight, nthreads)
   daa <- daa |>
     left_join(wgcna, by = "metabolite")
   c2cid <- compound2cid(medam, colnames(abundance))
