@@ -116,6 +116,99 @@ medam_batch <- function(medam,
   return(res)
 }
 
+#' @title MeDAM batch search for biomarker metabolites you input manually
+#' @description Batch search for potential metabolite-disease associations using
+#' MeDAM pipeline. Ref: fig 1.C in Huimin Zheng, et al. (2022).
+#' @param medam A Pool object connected MeDAM.db.
+#' @param metabolites A biomarker metabolites list.
+#' @param disease Aliases of disease (ignored case),  e.g. "pre-eclampsia".
+#' @param abundance Abundance table, a matrix or data frame in which columns are
+#' metabolites and rows ar samples. It will execute the MeDAM batch search for
+#' co-abundant metabolites when the abundance table is not NULL.
+#' @param score Threshold of significance to include a interaction, a number
+#' between 0 and 1000 (default: 700).
+#' @param ecpi_score Threshold of significance for metabilite-protein
+#' experimental interactions (from 0 to 1000, default: 800). See
+#' \code{stitch_expt_cpi()}.
+#' @param networkType Network type, one of "signed", "unsigned" and
+#' "signed hybrid".
+#' @param corMethod Correlation algorithm for network construction, e.g.,
+#' "spearman" or "pearson".
+#' @param minModuleSize Minimum size of module or cluster, default is 5.
+#' @param cutHeight Maximum dissimilarity (i.e., 1-correlation) that qualifies
+#' modules for merging.
+#' @param universe Count of universal background protein-coding genes.
+#' For example, background of homo sapiens is 21306.
+#' @param nthreads Default 10.
+#' @return a list contained:
+#' * \code{daa} The metabolites you input and the module to which they belong
+#' using \code{\link{wgcna_analysis}} while the abundance table is not NULL.
+#' * \code{network} Interaction network. See \code{\link{string_network}} and
+#' \code{\link{stitch_network}}.
+#' * \code{drgora} Disease-related genes ORA. See \code{\link{drgene_ora}}
+#' * \code{disease} Common name, DOID and related (entrez) genes of disease.
+#' @references Huimin Zheng, et al. (2022). In silico method to maximise the
+#' biological potential of understudied metabolomic biomarkers: a study in
+#' pre-eclampsia.
+#' @export
+medam_batch_manual <- function(medam,
+                               metabolites,
+                               disease,
+                               abundance = NULL,
+                               score = 700,
+                               ecpi_score = 800,
+                               networkType = "signed",
+                               corMethod = "spearman",
+                               minModuleSize = 5,
+                               cutHeight = 0.25,
+                               universe = 21306,
+                               nthreads = 10) {
+  daa <- tibble(metabolite = metabolites, significant = 1)
+  if (!is.null(abundance)) {
+    wgcna <- wgcna_analysis(abundance, networkType, corMethod,
+                            minModuleSize, cutHeight, nthreads)
+    daa <- wgcna |>
+      left_join(daa, by = "metabolite") |>
+      mutate(significant = if_else(is.na(significant), 0, 1))
+  }
+  daa <- daa |>
+    left_join(compound2cid(medamdb, daa$metabolite),
+              by = c("metabolite" = "compound")) 
+  tgtp_nw <- medam_tgtp_batch(medam, daa, score, ecpi_score)
+  if (!is.null(abundance)) {
+    coabm_nw <- medam_coabm_batch(medam, daa, score)
+  } else {
+    coabm_nw <- NULL
+  }
+  ssimm_nw <- medam_ssimm_batch(medam, daa, score)
+  all_network <- list(target_proteins = tgtp_nw, coab_metabolites = coabm_nw,
+                      ssim_metabolites = ssimm_nw)
+  if (grepl("DOID:\\d+", disease)) {
+    doid <- disease
+  } else {
+    doid <- pull(disease2doid(medam, disease), doid)
+  }
+  drg <- drgene_search(medam, doid)
+  eg <- pull(drg, ENTREZID)
+  tgtp_drgora <- drgora_batch(tgtp_nw, "tgt_proteins_", eg, universe)
+  if (!is.null(abundance)) {
+    coabm_drgora <- drgora_batch(coabm_nw, "co_metabolites_", eg, universe)
+  } else {
+    coabm_drgora <- NULL
+  }
+  ssimm_drgora <- drgora_batch(ssimm_nw, "ss_metabolites_", eg, universe)
+  all_drgora <- all_drgora <- tgtp_drgora |>
+    left_join(coabm_drgora, by = "metabolite")
+  if (!is.null(abundance)) {
+    all_drgora <- all_drgora |>
+    left_join(ssimm_drgora, by = "metabolite")
+  }
+  disease <- list(name = disease, doid = doid, drg = drg)
+  res <- list(daa = daa, network = all_network, drgora = all_drgora, 
+              disease = disease)
+  return(res)
+}
+
 ## drgora batch
 #' @importFrom tibble rownames_to_column as_tibble
 #' @importFrom dplyr rename_at vars
