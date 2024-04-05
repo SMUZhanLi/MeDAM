@@ -97,7 +97,7 @@ medam_batch <- function(medam,
   all_network <- list(target_proteins = tgtp_nw,
                       coab_metabolites = coabm_nw,
                       ssim_metabolites = ssimm_nw)
-  if (grepl(disease, "DOID:\\d+")) {
+  if (grepl("DOID:\\d+", disease)) {
     doid <- disease
   } else {
     doid <- disease2doid(medam, disease) |> pull(doid)
