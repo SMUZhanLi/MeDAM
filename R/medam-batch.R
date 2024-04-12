@@ -173,7 +173,7 @@ medam_batch_manual <- function(medam,
   }
   daa <- daa |>
     left_join(compound2cid(medamdb, daa$metabolite),
-              by = c("metabolite" = "compound")) 
+              by = c("metabolite" = "compound"))
   tgtp_nw <- medam_tgtp_batch(medam, daa, score, ecpi_score)
   if (!is.null(abundance)) {
     coabm_nw <- medam_coabm_batch(medam, daa, score)

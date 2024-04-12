@@ -11,8 +11,7 @@
 #' @param cutHeight Maximum dissimilarity (i.e., 1-correlation) that qualifies
 #' modules for merging.
 #' @param nthreads Default 10.
-#' @importFrom WGCNA enableWGCNAThreads disableWGCNAThreads pickSoftThreshold
-#' adjacency mergeCloseModules
+#' @importFrom WGCNA pickSoftThreshold adjacency mergeCloseModules
 #' @importFrom dynamicTreeCut cutreeDynamic
 #' @importFrom flashClust flashClust
 #' @importFrom stats as.dist
@@ -25,18 +24,16 @@
 #' }
 #' @export
 wgcna_analysis <- function(abundance,
-                          networkType = "signed",
-                          corMethod = "spearman",
-                          minModuleSize = 5,
-                          cutHeight = 0.25,
-                          nthreads = 10) {
+                           networkType = "signed",
+                           corMethod = "spearman",
+                           minModuleSize = 5,
+                           cutHeight = 0.25,
+                           nthreads = 10) {
   powers <- c(1:10, seq(12, 30, 2))
-  enableWGCNAThreads(nthreads)
   sft <- pickSoftThreshold(abundance,
                            powerVector = powers,
                            networkType = networkType)
   softPower <- sft$powerEstimate
-  disableWGCNAThreads()
   adjMat <- adjacency(datExpr = abundance,
                       power = softPower,
                       type = networkType,
