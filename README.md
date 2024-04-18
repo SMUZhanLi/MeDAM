@@ -5,7 +5,7 @@ extrapolation of potential Metabolite-Disease Associations by Mining biomedical 
 ``` r
 if (!requireNamespace("remotes", quietly=TRUE))
     install.packages("remotes")
-remotes::install_github("rstudio/pool")
+install.packages("pool")
 remotes::install_github("SMUZhanLi/MeDAM", ref = "dev", force = TRUE)
 
 library(pool)
