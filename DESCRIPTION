@@ -28,8 +28,7 @@ Imports:
     org.Hs.eg.db,
     Rcpp (>= 1.0.12)
 Remotes:
-    SMUZhanLi/roplsMini,
-    rstudio/pool
+    SMUZhanLi/roplsMini
 Suggests:
     pool (>= 1.0.1.9000)
 LinkingTo:
