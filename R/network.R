@@ -33,7 +33,8 @@ stitch_expt_cpi <- function(medam, stitchid, score = 900) {
 #' @param stringid STRING id, e.g. ENSP00000269305.
 #' @param score Threshold of significance to include a interaction, a number
 #' between 0 and 1000 (default: 700).
-#' @importFrom dplyr rename if_else bind_rows
+#' @importFrom dplyr rename if_else bind_rows across where
+#' @importFrom tibble add_column
 #' @details The synonyms of protein can be converted to STRING id using
 #' \code{\link{protein2stringid}}.
 #' @return list contained weights of each edge and the annotations of each node
@@ -79,7 +80,9 @@ string_network <- function(medam, stringid, score = 700) {
             node2 %in% !!newprot,
             score >= !!score)
   ppi <- rbind(ppi, ppi2) |>
-    mutate(type = "ppi")
+    add_column(prediction = NA, .before = "cooccurence") |>
+    mutate(type = "ppi",
+           across(where(is.integer), \(x) if_else(is.na(x), 0, x)))
 
   protinfo <- medam |>
     dbquery("stringv12proteininfo", stringv12 %in% allprot) |>
@@ -158,7 +161,11 @@ stitch_network <- function(medam, stitchid, score = 700) {
     rename(id = 1, external = 3) |>
     mutate(type = "protein", network = "output")
 
-  edges <- bind_rows(cpi, cci, ppi)
+  edges <- bind_rows(cpi, cci, ppi) |>
+    select("node1", "node2", "experiment", "fusion", "neighborhood",
+           "prediction", "cooccurence", "coexpression", "database",
+           "textmining", "score", "evidence", "type") |>
+    mutate(across(where(is.integer), \(x) if_else(is.na(x), 0, x)))
   nodes <- bind_rows(cheminfo, protinfo)
   res <- list(edges = edges, nodes = nodes)
   return(res)
