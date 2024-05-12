@@ -172,7 +172,7 @@ medam_batch_manual <- function(medam,
       mutate(significant = if_else(is.na(significant), 0, 1))
   }
   daa <- daa |>
-    left_join(compound2cid(medamdb, daa$metabolite),
+    left_join(compound2cid(medam, daa$metabolite),
               by = c("metabolite" = "compound"))
   tgtp_nw <- medam_tgtp_batch(medam, daa, score, ecpi_score)
   if (!is.null(abundance)) {
@@ -201,7 +201,7 @@ medam_batch_manual <- function(medam,
     left_join(coabm_drgora, by = "metabolite")
   if (!is.null(abundance)) {
     all_drgora <- all_drgora |>
-    left_join(ssimm_drgora, by = "metabolite")
+      left_join(ssimm_drgora, by = "metabolite")
   }
   disease <- list(name = disease, doid = doid, drg = drg)
   res <- list(daa = daa, network = all_network, drgora = all_drgora, 
