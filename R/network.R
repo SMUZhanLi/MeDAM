@@ -80,7 +80,7 @@ string_network <- function(medam, stringid, score = 700) {
             node2 %in% !!newprot,
             score >= !!score)
   ppi <- rbind(ppi, ppi2) |>
-    add_column(prediction = NA, .before = "cooccurence") |>
+    add_column(prediction = 0, .before = "cooccurence") |>
     mutate(type = "ppi",
            across(where(is.integer), \(x) if_else(is.na(x), 0, x)))
 
