@@ -62,3 +62,11 @@ desc_wrap <- function(desc, max_len = 40, wrap = "\n") {
     }) |>
     unlist()
 }
+
+## Normalization
+#' @keywords internal
+norm_min_max <- function(x) {
+  y <- na.omit(x)
+  new.x <- (x - min(y)) / (max(y) - min(y))
+  return(new.x)
+}
