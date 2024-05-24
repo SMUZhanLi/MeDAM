@@ -22,6 +22,7 @@
 }
 
 #' @keywords internal
+#' @importFrom utils head tail
 rm_head_tail <- function(x, n) {
   x <- tail(head(x, -n), -n)
   return(x)

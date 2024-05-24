@@ -2,6 +2,7 @@
 % Please edit documentation in R/medam-batch.R
 \name{medam_batch}
 \alias{medam_batch}
+\alias{medam_batch_manual}
 \title{MeDAM batch search}
 \usage{
 medam_batch(
@@ -21,12 +22,20 @@ medam_batch(
   log2fc_cutoff = 1.5,
   score = 700,
   ecpi_score = 800,
-  networkType = "signed",
-  corMethod = "spearman",
-  minModuleSize = 5,
-  cutHeight = 0.25,
   universe = 21306,
-  nthreads = 10
+  wgcna = NULL,
+  wgcna_params = list(abundance = abundance)
+)
+
+medam_batch_manual(
+  medam,
+  metabolites,
+  disease = NULL,
+  score = 700,
+  ecpi_score = 800,
+  universe = 21306,
+  wgcna = NULL,
+  wgcna_params = list(abundance = NULL)
 )
 }
 \arguments{
@@ -71,23 +80,18 @@ between 0 and 1000 (default: 700).}
 
 \item{ecpi_score}{Threshold of significance for metabilite-protein
 experimental interactions (from 0 to 1000, default: 800). See
-\code{stitch_expt_cpi()}.}
-
-\item{networkType}{Network type, one of "signed", "unsigned" and
-"signed hybrid".}
-
-\item{corMethod}{Correlation algorithm for network construction, e.g.,
-"spearman" or "pearson".}
-
-\item{minModuleSize}{Minimum size of module or cluster, default is 5.}
-
-\item{cutHeight}{Maximum dissimilarity (i.e., 1-correlation) that qualifies
-modules for merging.}
+\code{stitch_expt_cpi()}..}
 
 \item{universe}{Count of universal background protein-coding genes.
 For example, background of homo sapiens is 21306.}
 
-\item{nthreads}{Default 10.}
+\item{wgcna}{Result of WGCNA analysis for metabolite abundance. A dataframe
+contains metabolite and module columns.}
+
+\item{wgcna_params}{Define the parameters in WGCNA analysis when the
+\code{wgcna} is NULL and use \code{wgcna_analysis()} in medam batch.}
+
+\item{metabolites}{A biomarker metabolites list.}
 }
 \value{
 a list contained:
@@ -99,12 +103,29 @@ See \code{\link{diff_metabolites}} and \code{\link{wgcna_analysis}}.
 \item \code{drgora} Disease-related genes ORA. See \code{\link{drgene_ora}}
 \item \code{disease} Common name, DOID and related (entrez) genes of disease.
 }
+
+a list contained:
+\itemize{
+\item \code{daa} The metabolites you input and the module to which they belong
+using \code{\link{wgcna_analysis}} while the abundance table is not NULL.
+\item \code{network} Interaction network. See \code{\link{string_network}} and
+\code{\link{stitch_network}}.
+\item \code{drgora} Disease-related genes ORA. See \code{\link{drgene_ora}}
+\item \code{disease} Common name, DOID and related (entrez) genes of disease.
+}
 }
 \description{
 Batch search for potential metabolite-disease associations using
 MeDAM pipeline. Ref: fig 1.C in Huimin Zheng, et al. (2022).
+
+Batch search for potential metabolite-disease associations using
+MeDAM pipeline. Ref: fig 1.C in Huimin Zheng, et al. (2022).
 }
 \references{
+Huimin Zheng, et al. (2022). In silico method to maximise the
+biological potential of understudied metabolomic biomarkers: a study in
+pre-eclampsia.
+
 Huimin Zheng, et al. (2022). In silico method to maximise the
 biological potential of understudied metabolomic biomarkers: a study in
 pre-eclampsia.

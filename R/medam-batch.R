@@ -28,16 +28,14 @@
 #' @param ecpi_score Threshold of significance for metabilite-protein
 #' experimental interactions (from 0 to 1000, default: 800). See
 #' \code{stitch_expt_cpi()}.
-#' @param networkType Network type, one of "signed", "unsigned" and
-#' "signed hybrid".
-#' @param corMethod Correlation algorithm for network construction, e.g.,
-#' "spearman" or "pearson".
-#' @param minModuleSize Minimum size of module or cluster, default is 5.
-#' @param cutHeight Maximum dissimilarity (i.e., 1-correlation) that qualifies
-#' modules for merging.
 #' @param universe Count of universal background protein-coding genes.
 #' For example, background of homo sapiens is 21306.
-#' @param nthreads Default 10.
+#' @param wgcna Result of WGCNA analysis for metabolite abundance. A dataframe
+#' contains metabolite and module columns.
+#' @param wgcna_params Define the parameters in WGCNA analysis when the param
+#' \code{wgcna} is NULL and use \code{wgcna_analysis()} in medam batch.
+#' @importFrom stats setNames
+#' @importFrom utils modifyList
 #' @return a list contained:
 #' * \code{daa} Result of the differential abundance analysis for metabolomics.
 #' See \code{\link{diff_metabolites}} and \code{\link{wgcna_analysis}}.
@@ -66,12 +64,9 @@ medam_batch <- function(medam,
                         log2fc_cutoff = 1.5,
                         score = 700,
                         ecpi_score = 800,
-                        networkType = "signed",
-                        corMethod = "spearman",
-                        minModuleSize = 5,
-                        cutHeight = 0.25,
                         universe = 21306,
-                        nthreads = 10) {
+                        wgcna = NULL,
+                        wgcna_params = list(abundance = abundance)) {
   daa <- diff_metabolites(abundance = abundance,
                           resp = resp,
                           compared = compared,
@@ -83,8 +78,17 @@ medam_batch <- function(medam,
                           padj_cutoff = padj_cutoff,
                           auc_cutoff = auc_cutoff,
                           log2fc_cutoff = log2fc_cutoff)
-  wgcna <- wgcna_analysis(abundance, networkType, corMethod,
-                          minModuleSize, cutHeight, nthreads)
+  if (!is.null(wgcna)) {
+    wgcna <- setNames(wgcna, c("metabolite", "module"))
+  } else {
+    def_wgcna_params <- list(networkType = "signed",
+                             corMethod = "spearman",
+                             minModuleSize = 5,
+                             cutHeight = 0.25,
+                             nthreads = 10)
+    def_wgcna_params <- modifyList(def_wgcna_params, wgcna_params)
+    wgcna <- do.call(wgcna_analysis, def_wgcna_params)
+  }
   daa <- daa |>
     left_join(wgcna, by = "metabolite")
   c2cid <- compound2cid(medam, colnames(abundance))
@@ -122,24 +126,17 @@ medam_batch <- function(medam,
 #' @param medam A Pool object connected MeDAM.db.
 #' @param metabolites A biomarker metabolites list.
 #' @param disease Aliases of disease (ignored case),  e.g. "pre-eclampsia".
-#' @param abundance Abundance table, a matrix or data frame in which columns are
-#' metabolites and rows ar samples. It will execute the MeDAM batch search for
-#' co-abundant metabolites when the abundance table is not NULL.
 #' @param score Threshold of significance to include a interaction, a number
 #' between 0 and 1000 (default: 700).
 #' @param ecpi_score Threshold of significance for metabilite-protein
 #' experimental interactions (from 0 to 1000, default: 800). See
-#' \code{stitch_expt_cpi()}.
-#' @param networkType Network type, one of "signed", "unsigned" and
-#' "signed hybrid".
-#' @param corMethod Correlation algorithm for network construction, e.g.,
-#' "spearman" or "pearson".
-#' @param minModuleSize Minimum size of module or cluster, default is 5.
-#' @param cutHeight Maximum dissimilarity (i.e., 1-correlation) that qualifies
-#' modules for merging.
+#' \code{stitch_expt_cpi()}..
 #' @param universe Count of universal background protein-coding genes.
 #' For example, background of homo sapiens is 21306.
-#' @param nthreads Default 10.
+#' @param wgcna Result of WGCNA analysis for metabolite abundance. A dataframe
+#' contains metabolite and module columns.
+#' @param wgcna_params Define the parameters in WGCNA analysis when the
+#' \code{wgcna} is NULL and use \code{wgcna_analysis()} in medam batch.
 #' @return a list contained:
 #' * \code{daa} The metabolites you input and the module to which they belong
 #' using \code{\link{wgcna_analysis}} while the abundance table is not NULL.
@@ -150,23 +147,29 @@ medam_batch <- function(medam,
 #' @references Huimin Zheng, et al. (2022). In silico method to maximise the
 #' biological potential of understudied metabolomic biomarkers: a study in
 #' pre-eclampsia.
+#' @rdname medam_batch
 #' @export
 medam_batch_manual <- function(medam,
                                metabolites,
-                               disease,
-                               abundance = NULL,
+                               disease = NULL,
                                score = 700,
                                ecpi_score = 800,
-                               networkType = "signed",
-                               corMethod = "spearman",
-                               minModuleSize = 5,
-                               cutHeight = 0.25,
                                universe = 21306,
-                               nthreads = 10) {
+                               wgcna = NULL,
+                               wgcna_params = list(abundance = NULL)) {
+  def_wgcna_params <- list(networkType = "signed",
+                           corMethod = "spearman",
+                           minModuleSize = 5,
+                           cutHeight = 0.25,
+                           nthreads = 10)
+  def_wgcna_params <- modifyList(def_wgcna_params, wgcna_params)
   daa <- tibble(metabolite = metabolites, significant = 1)
-  if (!is.null(abundance)) {
-    wgcna <- wgcna_analysis(abundance, networkType, corMethod,
-                            minModuleSize, cutHeight, nthreads)
+  if (is.null(wgcna) || is.null(def_wgcna_params$abundance)) {
+    if (!is.null(wgcna)) {
+      wgcna <- setNames(wgcna, c("metabolite", "module"))
+    } else {
+      wgcna <- do.call(wgcna_analysis, def_wgcna_params)
+    }
     daa <- wgcna |>
       left_join(daa, by = "metabolite") |>
       mutate(significant = if_else(is.na(significant), 0, 1))
@@ -175,7 +178,7 @@ medam_batch_manual <- function(medam,
     left_join(compound2cid(medam, daa$metabolite),
               by = c("metabolite" = "compound"))
   tgtp_nw <- medam_tgtp_batch(medam, daa, score, ecpi_score)
-  if (!is.null(abundance)) {
+  if (!is.null(def_wgcna_params$abundance)) {
     coabm_nw <- medam_coabm_batch(medam, daa, score)
   } else {
     coabm_nw <- NULL
@@ -191,7 +194,7 @@ medam_batch_manual <- function(medam,
   drg <- drgene_search(medam, doid)
   eg <- pull(drg, ENTREZID)
   tgtp_drgora <- drgora_batch(tgtp_nw, "tgt_proteins_", eg, universe)
-  if (!is.null(abundance)) {
+  if (!is.null(def_wgcna_params$abundance)) {
     coabm_drgora <- drgora_batch(coabm_nw, "co_metabolites_", eg, universe)
   } else {
     coabm_drgora <- NULL
@@ -199,12 +202,12 @@ medam_batch_manual <- function(medam,
   ssimm_drgora <- drgora_batch(ssimm_nw, "ss_metabolites_", eg, universe)
   all_drgora <- all_drgora <- tgtp_drgora |>
     left_join(coabm_drgora, by = "metabolite")
-  if (!is.null(abundance)) {
+  if (!is.null(def_wgcna_params$abundance)) {
     all_drgora <- all_drgora |>
       left_join(ssimm_drgora, by = "metabolite")
   }
   disease <- list(name = disease, doid = doid, drg = drg)
-  res <- list(daa = daa, network = all_network, drgora = all_drgora, 
+  res <- list(daa = daa, network = all_network, drgora = all_drgora,
               disease = disease)
   return(res)
 }
