@@ -7,8 +7,8 @@
 \usage{
 medam_batch(
   medam,
-  disease,
   abundance,
+  disease = NULL,
   resp,
   compared,
   ortho = FALSE,
@@ -41,10 +41,10 @@ medam_batch_manual(
 \arguments{
 \item{medam}{A Pool object connected MeDAM.db.}
 
-\item{disease}{Aliases of disease (ignored case),  e.g. "pre-eclampsia".}
-
 \item{abundance}{Abundance table, a matrix or data frame in which columns are
 metabolites and rows ar samples.}
+
+\item{disease}{Aliases of disease (ignored case),  e.g. "pre-eclampsia".}
 
 \item{resp}{Response (i.e, group) to be modelled, a factor (same length as
 \code{abundance} row number).}
@@ -103,29 +103,12 @@ See \code{\link{diff_metabolites}} and \code{\link{wgcna_analysis}}.
 \item \code{drgora} Disease-related genes ORA. See \code{\link{drgene_ora}}
 \item \code{disease} Common name, DOID and related (entrez) genes of disease.
 }
-
-a list contained:
-\itemize{
-\item \code{daa} The metabolites you input and the module to which they belong
-using \code{\link{wgcna_analysis}} while the abundance table is not NULL.
-\item \code{network} Interaction network. See \code{\link{string_network}} and
-\code{\link{stitch_network}}.
-\item \code{drgora} Disease-related genes ORA. See \code{\link{drgene_ora}}
-\item \code{disease} Common name, DOID and related (entrez) genes of disease.
-}
 }
 \description{
 Batch search for potential metabolite-disease associations using
 MeDAM pipeline. Ref: fig 1.C in Huimin Zheng, et al. (2022).
-
-Batch search for potential metabolite-disease associations using
-MeDAM pipeline. Ref: fig 1.C in Huimin Zheng, et al. (2022).
 }
 \references{
-Huimin Zheng, et al. (2022). In silico method to maximise the
-biological potential of understudied metabolomic biomarkers: a study in
-pre-eclampsia.
-
 Huimin Zheng, et al. (2022). In silico method to maximise the
 biological potential of understudied metabolomic biomarkers: a study in
 pre-eclampsia.

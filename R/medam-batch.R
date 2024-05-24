@@ -2,9 +2,9 @@
 #' @description Batch search for potential metabolite-disease associations using
 #' MeDAM pipeline. Ref: fig 1.C in Huimin Zheng, et al. (2022).
 #' @param medam A Pool object connected MeDAM.db.
-#' @param disease Aliases of disease (ignored case),  e.g. "pre-eclampsia".
 #' @param abundance Abundance table, a matrix or data frame in which columns are
 #' metabolites and rows ar samples.
+#' @param disease Aliases of disease (ignored case),  e.g. "pre-eclampsia".
 #' @param resp Response (i.e, group) to be modelled, a factor (same length as
 #' \code{abundance} row number).
 #' @param compared Define the condition A and condition B in "response" for
@@ -49,8 +49,8 @@
 #' @export
 
 medam_batch <- function(medam,
-                        disease,
                         abundance,
+                        disease = NULL,
                         resp,
                         compared,
                         ortho = FALSE,
@@ -94,7 +94,6 @@ medam_batch <- function(medam,
   c2cid <- compound2cid(medam, colnames(abundance))
   daa <- daa |>
     left_join(c2cid, by = c("metabolite" = "compound"))
-
   tgtp_nw <- medam_tgtp_batch(medam, daa, score, ecpi_score)
   coabm_nw <- medam_coabm_batch(medam, daa, score)
   ssimm_nw <- medam_ssimm_batch(medam, daa, score)
@@ -120,9 +119,7 @@ medam_batch <- function(medam,
   return(res)
 }
 
-#' @title MeDAM batch search for biomarker metabolites you input manually
-#' @description Batch search for potential metabolite-disease associations using
-#' MeDAM pipeline. Ref: fig 1.C in Huimin Zheng, et al. (2022).
+#' @title MeDAM batch search
 #' @param medam A Pool object connected MeDAM.db.
 #' @param metabolites A biomarker metabolites list.
 #' @param disease Aliases of disease (ignored case),  e.g. "pre-eclampsia".
@@ -137,16 +134,6 @@ medam_batch <- function(medam,
 #' contains metabolite and module columns.
 #' @param wgcna_params Define the parameters in WGCNA analysis when the
 #' \code{wgcna} is NULL and use \code{wgcna_analysis()} in medam batch.
-#' @return a list contained:
-#' * \code{daa} The metabolites you input and the module to which they belong
-#' using \code{\link{wgcna_analysis}} while the abundance table is not NULL.
-#' * \code{network} Interaction network. See \code{\link{string_network}} and
-#' \code{\link{stitch_network}}.
-#' * \code{drgora} Disease-related genes ORA. See \code{\link{drgene_ora}}
-#' * \code{disease} Common name, DOID and related (entrez) genes of disease.
-#' @references Huimin Zheng, et al. (2022). In silico method to maximise the
-#' biological potential of understudied metabolomic biomarkers: a study in
-#' pre-eclampsia.
 #' @rdname medam_batch
 #' @export
 medam_batch_manual <- function(medam,
@@ -178,7 +165,7 @@ medam_batch_manual <- function(medam,
     left_join(compound2cid(medam, daa$metabolite),
               by = c("metabolite" = "compound"))
   tgtp_nw <- medam_tgtp_batch(medam, daa, score, ecpi_score)
-  if (!is.null(def_wgcna_params$abundance)) {
+  if (!is.null(wgcna)) {
     coabm_nw <- medam_coabm_batch(medam, daa, score)
   } else {
     coabm_nw <- NULL
@@ -194,15 +181,11 @@ medam_batch_manual <- function(medam,
   drg <- drgene_search(medam, doid)
   eg <- pull(drg, ENTREZID)
   tgtp_drgora <- drgora_batch(tgtp_nw, "tgt_proteins_", eg, universe)
-  if (!is.null(def_wgcna_params$abundance)) {
-    coabm_drgora <- drgora_batch(coabm_nw, "co_metabolites_", eg, universe)
-  } else {
-    coabm_drgora <- NULL
-  }
   ssimm_drgora <- drgora_batch(ssimm_nw, "ss_metabolites_", eg, universe)
   all_drgora <- all_drgora <- tgtp_drgora |>
     left_join(coabm_drgora, by = "metabolite")
-  if (!is.null(def_wgcna_params$abundance)) {
+  if (!is.null(wgcna)) {
+    coabm_drgora <- drgora_batch(coabm_nw, "co_metabolites_", eg, universe)
     all_drgora <- all_drgora |>
       left_join(ssimm_drgora, by = "metabolite")
   }
