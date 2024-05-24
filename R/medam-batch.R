@@ -95,11 +95,11 @@ medam_batch <- function(medam,
   daa <- daa |>
     left_join(c2cid, by = c("metabolite" = "compound"))
   tgtp_nw <- medam_tgtp_batch(medam, daa, score, ecpi_score)
-  coabm_nw <- medam_coabm_batch(medam, daa, score)
   ssimm_nw <- medam_ssimm_batch(medam, daa, score)
+  coabm_nw <- medam_coabm_batch(medam, daa, score)
   all_network <- list(target_proteins = tgtp_nw,
-                      coab_metabolites = coabm_nw,
-                      ssim_metabolites = ssimm_nw)
+                      ssim_metabolites = ssimm_nw,
+                      coab_metabolites = coabm_nw)
   if (grepl("DOID:\\d+", disease)) {
     doid <- disease
   } else {
@@ -108,11 +108,11 @@ medam_batch <- function(medam,
   drg <- drgene_search(medam, doid)
   eg <- pull(drg, ENTREZID)
   tgtp_drgora <- drgora_batch(tgtp_nw, "tgt_proteins_", eg, universe)
-  coabm_drgora <- drgora_batch(coabm_nw, "co_metabolites_", eg, universe)
   ssimm_drgora <- drgora_batch(ssimm_nw, "ss_metabolites_", eg, universe)
+  coabm_drgora <- drgora_batch(coabm_nw, "co_metabolites_", eg, universe)
   all_drgora <- tgtp_drgora |>
-    left_join(coabm_drgora, by = "metabolite") |>
-    left_join(ssimm_drgora, by = "metabolite")
+    left_join(ssimm_drgora, by = "metabolite") |>
+    left_join(coabm_drgora, by = "metabolite")
   disease <- list(name = disease, doid = doid, drg = drg)
   res <- list(daa = daa, network = all_network, drgora = all_drgora,
               disease = disease)
