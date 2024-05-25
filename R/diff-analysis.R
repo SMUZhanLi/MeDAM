@@ -1,4 +1,4 @@
-#' @title Differential analysis
+#' @title Differential abundance analysis
 #' @description Differential abundance analysis for metabolomics.
 #' @param abundance Abundance table, a matrix or data frame in which columns are
 #' metabolites and rows ar samples.
