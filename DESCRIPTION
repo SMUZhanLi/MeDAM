@@ -29,7 +29,10 @@ Imports:
     Rcpp (>= 1.0.12),
     ggplot2,
     ggraph,
-    ggnewscale
+    ggnewscale,
+    aplot,
+    scales,
+    enrichplot
 Remotes:
     SMUZhanLi/roplsMini
 Suggests:
