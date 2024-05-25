@@ -79,7 +79,7 @@ medam_target_proteins <- function(medam,
   if (length(stringid) > 0) {
     res <- string_network(medam, stringid, score)
     res$drg <- drgene_ora(res$nodes, drg, universe)
-    res$enrich <- enrichment(res$nodes, padj, pcutoff, ont)
+    res$enrich <- enrichment_analysis(res$nodes, padj, pcutoff, ont)
   } else {
     res <- NULL
   }
@@ -174,7 +174,7 @@ medam_coab_metabolites <- function(medam,
   if (length(stitchid) > 0) {
     res <- stitch_network(medam, stitchid, score = score)
     res$drg <- drgene_ora(res$nodes, drg, universe)
-    res$enrich <- enrichment(res$nodes, padj, pcutoff, ont)
+    res$enrich <- enrichment_analysis(res$nodes, padj, pcutoff, ont)
   } else {
     res <- NULL
   }
@@ -252,7 +252,7 @@ medam_ssim_metabolites <- function(medam,
   if (length(stitchid) > 0) {
     res <- stitch_network(medam, stitchid, score = score)
     res$drg <- drgene_ora(res$nodes, drg, universe)
-    res$enrich <- enrichment(res$nodes, padj, pcutoff, ont)
+    res$enrich <- enrichment_analysis(res$nodes, padj, pcutoff, ont)
   } else {
     res <- NULL
   }

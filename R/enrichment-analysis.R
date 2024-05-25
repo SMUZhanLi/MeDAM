@@ -14,11 +14,11 @@
 #' biological potential of understudied metabolomic biomarkers: a study in
 #' pre-eclampsia.
 #' @export
-enrichment <- function(nodes,
-                       padj = "BH",
-                       pcutoff = 0.05,
-                       ont = c("BP", "MF", "CC", "KEGG",
-                               "WikiPathways", "Reactome", "DO")) {
+enrichment_analysis <- function(nodes,
+                                padj = "BH",
+                                pcutoff = 0.05,
+                                ont = c("BP", "MF", "CC", "KEGG",
+                                        "WikiPathways", "Reactome", "DO")) {
   if (!is.null(nodes)) {
     iprot <- nodes |> filter(type == "protein")
     entrezid <- pull(iprot, external)
@@ -36,6 +36,32 @@ enrichment <- function(nodes,
     res <- lapply(res, entrez2gename, iprot = iprot)
   }
   return(res)
+}
+
+#' @title Add result of enrichment analysis
+#' @description Add result of enrichment analysis into the slot `$enriment`
+#' in result of MeDAM batch search when select a metabolite and its branch.
+#' @param medamres Result of MeDAM batch search.
+#' @param metabolite Metabolite name.
+#' @param branch MeDAM branch.
+#' @param padj P-values adjusted methods, one of "holm", "hochberg", "hommel",
+#' "bonferroni", "BH", "BY", "fdr", "none".
+#' @param pcutoff 0.05.
+#' @param ont c("BP", "MF", "CC", "KEGG", "WikiPathways", "Reactome", "DO").
+#' @importFrom clusterProfiler enricher
+#' @return Result of MeDAM batch search.
+#' @export
+medam_add_enrichment <- function(medamres,
+                                 metabolite,
+                                 branch,
+                                 padj = "BH",
+                                 pcutoff = 0.05,
+                                 ont = c("BP", "MF", "CC", "KEGG",
+                                         "WikiPathways", "Reactome", "DO")) {
+  nodes <- medamres[[metabolite]][[branch]]$nodes
+  enres <- enrichment_analysis(nodes, padj, pcutoff, ont)
+  medamres$enriment[[metabolite]][[branch]] <- enres
+  return(medamres)
 }
 
 ## Convert entrez gene id to gene symbol for \code{enrichResult}.

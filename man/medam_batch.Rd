@@ -102,6 +102,8 @@ See \code{\link{diff_metabolites}} and \code{\link{wgcna_analysis}}.
 \code{\link{stitch_network}}.
 \item \code{drgora} Disease-related genes ORA. See \code{\link{drgene_ora}}
 \item \code{disease} Common name, DOID and related (entrez) genes of disease.
+\item \code{enrichment} NULL by default. Use \code{\link{medam_add_enrichment}}
+to excute enriment analysis and add result into \verb{$enrichment}
 }
 }
 \description{

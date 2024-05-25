@@ -43,6 +43,8 @@
 #' \code{\link{stitch_network}}.
 #' * \code{drgora} Disease-related genes ORA. See \code{\link{drgene_ora}}
 #' * \code{disease} Common name, DOID and related (entrez) genes of disease.
+#' * \code{enrichment} NULL by default. Use \code{\link{medam_add_enrichment}}
+#' to excute enriment analysis and add result into `$enrichment`
 #' @references Huimin Zheng, et al. (2022). In silico method to maximise the
 #' biological potential of understudied metabolomic biomarkers: a study in
 #' pre-eclampsia.
@@ -97,9 +99,7 @@ medam_batch <- function(medam,
   tgtp_nw <- medam_tgtp_batch(medam, daa, score, ecpi_score)
   ssimm_nw <- medam_ssimm_batch(medam, daa, score)
   coabm_nw <- medam_coabm_batch(medam, daa, score)
-  all_network <- list(target_proteins = tgtp_nw,
-                      ssim_metabolites = ssimm_nw,
-                      coab_metabolites = coabm_nw)
+  all_network <- get_all_network(daa, tgtp_nw, ssimm_nw, coabm_nw)
   if (grepl("DOID:\\d+", disease)) {
     doid <- disease
   } else {
@@ -115,7 +115,7 @@ medam_batch <- function(medam,
     left_join(coabm_drgora, by = "metabolite")
   disease <- list(name = disease, doid = doid, drg = drg)
   res <- list(daa = daa, network = all_network, drgora = all_drgora,
-              disease = disease)
+              disease = disease, enrichment = NULL)
   return(res)
 }
 
@@ -171,9 +171,7 @@ medam_batch_manual <- function(medam,
   } else {
     coabm_nw <- NULL
   }
-  all_network <- list(target_proteins = tgtp_nw,
-                      ssim_metabolites = ssimm_nw,
-                      coab_metabolites = coabm_nw)
+  all_network <- get_all_network(daa, tgtp_nw, ssimm_nw, coabm_nw)
   if (grepl("DOID:\\d+", disease)) {
     doid <- disease
   } else {
@@ -195,7 +193,7 @@ medam_batch_manual <- function(medam,
     left_join(coabm_drgora, by = "metabolite")
   disease <- list(name = disease, doid = doid, drg = drg)
   res <- list(daa = daa, network = all_network, drgora = all_drgora,
-              disease = disease)
+              disease = disease, enrichment = NULL)
   return(res)
 }
 
@@ -320,4 +318,16 @@ medam_coabm_batch <- function(medam, dat, score) {
     lapply(function(m) mod2nw[[m]]) 
   names(res) <- sdat |> pull(metabolite)
   return(res)
+}
+
+## Combine all network of three branch in MeDAM batch search
+#' @keywords internal
+get_all_network <- function(dat, tgtp_nw, ssimm_nw, coabm_nw) {
+  diffmetabo <- dat |> filter(significant == 1) |> pull(metabolite)
+  all_network <- lapply(diffmetabo, function(x) {
+    list(target_proteins = tgtp_nw[[x]],
+         ssim_metabolites = ssimm_nw[[x]],
+         coab_metabolites = coabm_nw[[x]])
+  })
+  return(all_network)
 }

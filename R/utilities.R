@@ -79,3 +79,26 @@ norm_min_max <- function(x) {
   new.x <- (x - min(y)) / (max(y) - min(y))
   return(new.x)
 }
+
+## Get disease related functional items in enrich result
+#' @keywords internal
+match_hubitems <- function(enrichres, hubitems, matchkey = "ID") {
+  lapply(enrichres, function(x) {
+    if (is.null(x)) {
+      res <- NULL
+    } else {
+      lapply(names(x), function(ont) {
+        dat <- as.data.frame(x[[ont]])
+        index <- match(hubitems[[matchkey]], dat[[matchkey]]) |> na.omit()
+        if (length(index) == 0) {
+          NULL
+        } else {
+          dat[index, ] |>
+            mutate(ont = ont, index = index, description = Description) |>
+            select(ont, index, description)
+        }
+      }) |>
+      do.call(rbind, args = _)
+    }
+  })
+}
