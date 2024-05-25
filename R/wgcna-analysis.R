@@ -30,9 +30,9 @@ wgcna_analysis <- function(abundance,
                            cutHeight = 0.25,
                            nthreads = 10) {
   powers <- c(1:10, seq(12, 30, 2))
-  sft <- pickSoftThreshold(abundance,
-                           powerVector = powers,
-                           networkType = networkType)
+  sft <- suppressMessages(pickSoftThreshold(abundance,
+                                            powerVector = powers,
+                                            networkType = networkType))
   softPower <- sft$powerEstimate
   adjMat <- adjacency(datExpr = abundance,
                       power = softPower,

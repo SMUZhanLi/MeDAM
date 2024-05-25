@@ -85,11 +85,12 @@ diff_metabolites <- function(abundance,
   }
   abundance <- scale_abundance(abundance, scaling)
   if (ortho) {
-    oplsda <- opls(abundance, resp, predI = 1, orthoI = NA, scaleC = "none",
-                   fig.pdfC = "none")
+    oplsda <- suppressMessages(opls(abundance, resp, predI = 1, orthoI = NA,
+                                    scaleC = "none", fig.pdfC = "none"))
     vip <- getVipVn(oplsda)
   } else {
-    plsda <- opls(abundance, resp, scaleC = "none", fig.pdfC = "none")
+    plsda <- suppressMessages(opls(abundance, resp, scaleC = "none",
+                                   fig.pdfC = "none"))
     vip <- getVipVn(plsda)
   }
   statistic <- apply(abundance, 2, function(x) {
