@@ -21,6 +21,14 @@
   colorRampPalette(cols[[type]])(n)
 }
 
+## Suppress the print and cat
+#' @keywords internal
+suppressPrintAndCat <- function(x) {
+  sink(tempfile(), type = "out")
+  on.exit(sink())
+  invisible(force(x))
+}
+
 #' @keywords internal
 #' @importFrom utils head tail
 rm_head_tail <- function(x, n) {
