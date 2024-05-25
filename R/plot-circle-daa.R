@@ -11,10 +11,10 @@
 #' @param .offset Offset of each statistical measure in different circular ring.
 #' @importFrom stats median
 #' @importFrom tidyr pivot_longer
-#' @importFrom ggplot2 ggplot geom_point geom_text geom_tile scale_color_manual
-#' scale_shape_manual scale_fill_gradient scale_size coord_polar labs guides
-#' guide_legend scale_x_continuous scale_y_continuous expansion theme aes
-#' element_blank element_text unit
+#' @importFrom ggplot2 ggplot aes geom_point geom_text geom_tile
+#' scale_color_manual scale_shape_manual scale_fill_gradient scale_size
+#' coord_polar labs guides guide_legend scale_x_continuous scale_y_continuous
+#' expansion theme element_blank element_text element_rect unit
 #' @importFrom ggraph geom_edge_diagonal
 #' @importFrom ggnewscale new_scale_color new_scale_fill
 #' @export
