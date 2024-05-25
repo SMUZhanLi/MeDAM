@@ -328,6 +328,7 @@ get_all_network <- function(dat, tgtp_nw, ssimm_nw, coabm_nw) {
     list(target_proteins = tgtp_nw[[x]],
          ssim_metabolites = ssimm_nw[[x]],
          coab_metabolites = coabm_nw[[x]])
-  })
+  }) |>
+  setNames(diffmetabo)
   return(all_network)
 }

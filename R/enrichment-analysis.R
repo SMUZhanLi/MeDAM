@@ -60,7 +60,7 @@ medam_add_enrichment <- function(medamres,
                                          "WikiPathways", "Reactome", "DO")) {
   medam_branch <- c("target_proteins", "ssim_metabolites", "coab_metabolites")
   branch <- match.arg(branch, medam_branch)
-  nodes <- medamres[[metabolite]][[branch]]$nodes
+  nodes <- medamres$network[[metabolite]][[branch]]$nodes
   enres <- enrichment_analysis(nodes, padj, pcutoff, ont)
   medamres$enriment[[metabolite]][[branch]] <- enres
   return(medamres)
