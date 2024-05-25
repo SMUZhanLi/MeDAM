@@ -104,7 +104,7 @@ medam_sankey_plot <- function(medamnw,
     i <- termsda[n, "index"]
     eda <- enrichda[[ont]][i, ]
     eda$Description <- desc_wrap(eda$Description, max_desc_len)
-    get_sanky_data(medamnw, eda, branch)
+    get_sankey_data(medamnw, eda, branch)
   })
   new_edges <- lapply(sankyda, `[[`, "edges") |>
     do.call("rbind", args = _) |>
@@ -140,6 +140,14 @@ medam_sankey_plot <- function(medamnw,
     mutate(y = rm_head_tail(seq(1, max_freq, length.out = if_else(n() == max_freq, max_freq + 2, n() + 2)), 1)) |>
     ungroup() |>
     mutate(x = level, `Node type` = node_type[level + 1])
+  
+  string_edges_levels <- c(
+    "itself", "experiment", "neighborhood", "fusion",
+    "prediction", "cooccurence", "coexpression", "database", "textmining"
+  )
+  term_edges_levels <- new_nodes |> filter(level == 2) |> pull(name)
+  link_type_levels <- c(string_edges_levels, term_edges_levels)
+
   index1 <- match(new_edges$node1, new_nodes$id)
   index2 <- match(new_edges$node2, new_nodes$id)
   new_edges <- new_edges |>

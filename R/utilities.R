@@ -83,22 +83,16 @@ norm_min_max <- function(x) {
 ## Get disease related functional items in enrich result
 #' @keywords internal
 match_hubitems <- function(enrichres, hubitems, matchkey = "ID") {
-  lapply(enrichres, function(x) {
-    if (is.null(x)) {
-      res <- NULL
+  lapply(names(enrichres), function(ont) {
+    dat <- as.data.frame(enrichres[[ont]])
+    index <- match(hubitems[[matchkey]], dat[[matchkey]]) |> na.omit()
+    if (length(index) == 0) {
+      NULL
     } else {
-      lapply(names(x), function(ont) {
-        dat <- as.data.frame(x[[ont]])
-        index <- match(hubitems[[matchkey]], dat[[matchkey]]) |> na.omit()
-        if (length(index) == 0) {
-          NULL
-        } else {
-          dat[index, ] |>
-            mutate(ont = ont, index = index, description = Description) |>
-            select(ont, index, description)
-        }
-      }) |>
-      do.call(rbind, args = _)
+      dat[index, ] |>
+        mutate(ont = ont, index = index, description = Description) |>
+        select(ont, index, description)
     }
-  })
+  }) |>
+  do.call(rbind, args = _)
 }
