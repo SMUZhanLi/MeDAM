@@ -102,9 +102,9 @@ diff_metabolites <- function(abundance,
     auc_value <- roc_curve$auc
     list(pval = fit$p.value, auc_value = auc_value)
   })
-  pval <- sapply(statistic, `[[`, "pval")
+  pval <- lapply(statistic, `[[`, "pval") |> unlist()
   adj_pval <- p.adjust(pval, method = padj_method)
-  auc_value <- sapply(statistic, `[[`, "auc_value")
+  auc_value <- lapply(statistic, `[[`, "auc_value") |> unlist()
   fc <- apply(old_abun, 2, function(x) {
     m <- tapply(x, resp, mean, na.rm = TRUE)
     m[compared[1]] / m[compared[2]]
