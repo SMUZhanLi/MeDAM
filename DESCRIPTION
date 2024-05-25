@@ -26,7 +26,10 @@ Imports:
     pROC,
     stringr,
     org.Hs.eg.db,
-    Rcpp (>= 1.0.12)
+    Rcpp (>= 1.0.12),
+    ggplot2,
+    ggraph,
+    ggnewscale
 Remotes:
     SMUZhanLi/roplsMini
 Suggests:
