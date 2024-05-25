@@ -2,7 +2,7 @@
 % Please edit documentation in R/diff-analysis.R
 \name{diff_metabolites}
 \alias{diff_metabolites}
-\title{Differential analysis}
+\title{Differential abundance analysis}
 \usage{
 diff_metabolites(
   abundance,
