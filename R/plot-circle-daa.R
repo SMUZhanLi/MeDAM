@@ -13,7 +13,7 @@
 #' @importFrom tidyr pivot_longer
 #' @importFrom ggplot2 ggplot geom_point geom_text geom_tile scale_color_manual
 #' scale_shape_manual scale_fill_gradient scale_size coord_polar labs guides
-#' guide_legend scale_x_continuous scale_y_continuous expansion theme
+#' guide_legend scale_x_continuous scale_y_continuous expansion theme aes
 #' element_blank element_text unit
 #' @importFrom ggraph geom_edge_diagonal
 #' @importFrom ggnewscale new_scale_color new_scale_fill
@@ -41,7 +41,7 @@ medam_circle_plot <- function(batchres,
     arrange(bar.h * sign(log2fc)) |>
     mutate(group = if_else(log2fc > 0, g[1], g[2]),
            edge.id = seq(1, n()),
-           edge.x = edge.id + max(sign(log2fc), 0),
+           edge.x = edge.id + if_else(sign(log2fc) == 1, 1, 0),
            edge.y = 2,
            edge.yend = -1,
            circular = FALSE,
