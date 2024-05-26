@@ -11,7 +11,7 @@
 #' @param .offset Offset of each statistical measure in different circular ring.
 #' @importFrom stats median
 #' @importFrom tidyr pivot_longer
-#' @importFrom dplyr .data
+#' @importFrom dplyr .data n
 #' @importFrom ggplot2 ggplot aes geom_point geom_text geom_tile
 #' scale_color_manual scale_shape_manual scale_fill_gradient scale_size
 #' coord_polar labs guides guide_legend scale_x_continuous scale_y_continuous
