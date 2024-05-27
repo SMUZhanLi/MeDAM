@@ -62,7 +62,7 @@ medam_add_enrichment <- function(medamres,
   branch <- match.arg(branch, medam_branch)
   nodes <- medamres$network[[metabolite]][[branch]]$nodes
   enres <- enrichment_analysis(nodes, padj, pcutoff, ont)
-  medamres$enriment[[metabolite]][[branch]] <- enres
+  medamres$enrichment[[metabolite]][[branch]] <- enres
   return(medamres)
 }
 
