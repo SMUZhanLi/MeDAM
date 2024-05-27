@@ -216,6 +216,7 @@ drgora_batch <- function(network, prefix, drg, universe) {
 }
 
 # target proteins batch
+#' @importFrom dplyr right_join
 #' @keywords internal
 medam_tgtp_batch <- function(medam, dat, score, ecpi_score) {
   sdat <- dat |> filter(significant == 1)
