@@ -5,7 +5,7 @@
 \title{Circle plot}
 \usage{
 medam_circle_plot(
-  batchres,
+  medamres,
   sort.by = "vip",
   max_metabo_len = 30,
   start = 0,
@@ -13,7 +13,7 @@ medam_circle_plot(
 )
 }
 \arguments{
-\item{batchres}{Result of MeDAM batch search.}
+\item{medamres}{Result of MeDAM batch search.}
 
 \item{sort.by}{Order the metabolites by selected variable, one of "vip",
 "abs(log2fc)", "-log10(pvalue)" and "auc".}

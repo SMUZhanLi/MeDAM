@@ -63,8 +63,8 @@ get_sankey_data <- function(medamnw, enrichda, branch) {
 #' query nodes in MeDAM branch (e.g. the target proteins, the structural similar
 #' metabolites and the co-abundant metabolites); (2) the potential proteins and
 #' functional terms.
-#' @param medamnw The medam network contained edges and nodes data.
-#' @param enrichres The result of enrichment analysis.
+#' @param medamres Result of MeDAM batch search.
+#' @param metabolite Metabolite.
 #' @param branch One of "target_proteins", "ssim_metabolites" and
 #' "coab_metabolites"
 #' @param disterms The disease related functional terms or pathways.
@@ -75,8 +75,8 @@ get_sankey_data <- function(medamnw, enrichda, branch) {
 #' It will wrap names longer that 30 characters by default.
 #' @importFrom aplot insert_left insert_right
 #' @export
-medam_sankey_plot <- function(medamnw,
-                              enrichres,
+medam_sankey_plot <- function(medamres,
+                              metabolite,
                               branch,
                               disterms,
                               matchkey,
@@ -84,6 +84,9 @@ medam_sankey_plot <- function(medamnw,
                               max_desc_len = 30) {
   medam_branch <- c("target_proteins", "ssim_metabolites", "coab_metabolites")
   branch <- match.arg(branch, medam_branch)
+
+  medamnw <- medamres$network[[metabolite]][[branch]]
+  enrichres <- medamres$enrichment[[metabolite]][[branch]]
   if (branch == "target_proteins") {
     edges.type <- "ppi"
     branch <- "target proteins"
@@ -183,24 +186,29 @@ medam_sankey_plot <- function(medamnw,
 #' @importFrom ggplot2 scale_fill_manual sec_axis
 #' @importFrom ggraph scale_edge_colour_manual
 #' @keywords internal
-internal_sankey_plot <- function(new_edges, new_nodes, branch, left = TRUE, limit_ymax) {
+internal_sankey_plot <- function(new_edges,
+                                 new_nodes,
+                                 branch,
+                                 left,
+                                 limit_ymax) {
   point_shapes <- c(23, 22, 21) |>
     setNames(c(branch, "interaction protein", "functional term"))
   point_cols <- rev(hue_pal()(3)) |>
     setNames(c(branch, "interaction protein", "functional term"))
-  string_edges_cols <- c(
-    "#ADF2AD", "#4075C1", "#ffff33", "#c2a5cf", "#ff7f00",
-    "#810F7C", "#F4AF6E", "#0fb451", "#E58585"
-  )
-  string_edges_levels <- c(
-    "itself", "experiment", "neighborhood", "fusion",
-    "prediction", "cooccurence", "coexpression", "database", "textmining"
-  )
-  term_edges_levels <- new_nodes |> filter(level == 2) |> pull(name)
-  term_edges_cols <- hue_pal()(length(term_edges_levels))
-  link_type_levels <- c(string_edges_levels, term_edges_levels)
-  link_type_cols <- c(string_edges_cols, term_edges_cols) |>
-    setNames(link_type_levels)
+  if (left) {
+    link_type_levels <- c(
+      "itself", "experiment", "neighborhood", "fusion",
+      "prediction", "cooccurence", "coexpression", "database", "textmining"
+    )
+    link_type_cols <- c(
+      "#ADF2AD", "#4075C1", "#ffff33", "#c2a5cf", "#ff7f00",
+      "#810F7C", "#F4AF6E", "#0fb451", "#E58585"
+    ) |> setNames(link_type_levels)
+  } else {
+    link_type_levels <- new_nodes |> filter(level == 2) |> pull(name)
+    link_type_cols <- hue_pal()(length(link_type_levels)) |>
+      setNames(link_type_levels)
+  }
   psankey <- ggplot(new_nodes) +
     geom_edge_diagonal(aes(x = x, y = y, xend = xend, yend = yend,
                            circular = circular, edge_colour = evidence),

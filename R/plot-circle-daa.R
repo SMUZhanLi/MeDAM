@@ -1,7 +1,7 @@
 #' @title Circle plot
 #' @description Show statistical measure of metabolites which have
 #' differentially abundance in the two groups.
-#' @param batchres Result of MeDAM batch search.
+#' @param medamres Result of MeDAM batch search.
 #' @param sort.by Order the metabolites by selected variable, one of "vip",
 #' "abs(log2fc)", "-log10(pvalue)" and "auc".
 #' @param max_metabo_len A numeric value sets wrap length for metabolite labels.
@@ -11,7 +11,7 @@
 #' @param .offset Offset of each statistical measure in different circular ring.
 #' @importFrom stats median
 #' @importFrom tidyr pivot_longer
-#' @importFrom dplyr .data n
+#' @importFrom dplyr .data n distinct
 #' @importFrom ggplot2 ggplot aes geom_point geom_text geom_tile
 #' scale_color_manual scale_shape_manual scale_fill_gradient scale_size
 #' coord_polar labs guides guide_legend scale_x_continuous scale_y_continuous
@@ -19,7 +19,7 @@
 #' @importFrom ggraph geom_edge_diagonal
 #' @importFrom ggnewscale new_scale_color new_scale_fill
 #' @export
-medam_circle_plot <- function(batchres,
+medam_circle_plot <- function(medamres,
                               sort.by = "vip",
                               max_metabo_len = 30,
                               start = 0,
@@ -28,9 +28,9 @@ medam_circle_plot <- function(batchres,
   measures <- c("auc", "abs(log2fc)", "-log10(pvalue)", "vip")
   sort.by <- match.arg(sort.by, measures)
   measures <- measures[measures != sort.by]
-  pdat <- batchres$daa |>
+  pdat <- medamres$daa |>
     filter(significant == 1) |>
-    left_join(batchres$drgora, by = "metabolite")
+    left_join(medamres$drgora, by = "metabolite")
   g <- unique(pdat$fc_direct) |>
     strsplit("/") |>
     unlist()

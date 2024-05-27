@@ -5,8 +5,8 @@
 \title{Sankey plot}
 \usage{
 medam_sankey_plot(
-  medamnw,
-  enrichres,
+  medamres,
+  metabolite,
   branch,
   disterms,
   matchkey,
@@ -15,9 +15,9 @@ medam_sankey_plot(
 )
 }
 \arguments{
-\item{medamnw}{The medam network contained edges and nodes data.}
+\item{medamres}{Result of MeDAM batch search.}
 
-\item{enrichres}{The result of enrichment analysis.}
+\item{metabolite}{Metabolite.}
 
 \item{branch}{One of "target_proteins", "ssim_metabolites" and
 "coab_metabolites"}
