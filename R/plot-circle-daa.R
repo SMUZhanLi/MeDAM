@@ -35,15 +35,14 @@ medam_circle_plot <- function(medamres,
     strsplit("/") |>
     unlist()
   pdat <- pdat |>
-    mutate(
-      `abs(log2fc)` = abs(log2fc),
-      `-log10(pvalue)` = -log10(pvalue),
-      bar.h = abs(.data[[sort.by]])) |>
+    mutate(`abs(log2fc)` = abs(log2fc),
+           `-log10(pvalue)` = -log10(pvalue),
+           bar.h = abs(.data[[sort.by]])) |>
     arrange(bar.h * sign(log2fc)) |>
     mutate(group = if_else(log2fc > 0, g[1], g[2]),
            edge.id = seq(1, n()),
            edge.x = edge.id + if_else(sign(log2fc) == 1, 1, 0),
-           edge.y = 2,
+           edge.y = 1,
            edge.yend = -1,
            circular = FALSE,
            label_len = unlist(lapply(strsplit(metabolite, ""), length)),
@@ -52,15 +51,14 @@ medam_circle_plot <- function(medamres,
            angle = 90 - rad2deg - (360 * (edge.x) / (n() + 2)),
            hjust = if_else(angle < - 90 - rad2deg, 1, 0),
            angle = if_else(angle < - 90 - rad2deg, angle + 180, angle),
-           tgtp.y = if_else(is.na(tgt_proteins_padj), NA, 2 + .offset),
-           ssimm.y = if_else(is.na(ss_metabolites_padj), NA, 2.5 + .offset * 2),
-           coabm.y = if_else(is.na(co_metabolites_padj), NA, 3 + .offset * 3),
-           tile1.y = 4 + .offset * 4,
-           tile2.y = 5 + .offset * 5,
-           tile3.y = 6 + .offset * 6,
-           norm.bar.h = norm_min_max(bar.h) * 1.5 + 1,
-           bar.y = 6.5 + .offset * 7 + norm.bar.h / 2
-    ) |>
+           tgtp.y = if_else(is.na(tgt_proteins_padj), NA, 1 + .offset),
+           ssimm.y = if_else(is.na(ss_metabolites_padj), NA, 1.3 + .offset * 2),
+           coabm.y = if_else(is.na(co_metabolites_padj), NA, 1.6 + .offset * 3),
+           tile1.y = 2 + .offset * 4,
+           tile2.y = 2.6 + .offset * 5,
+           tile3.y = 3.2 + .offset * 6,
+           norm.bar.h = norm_min_max(bar.h) + 0.4,
+           bar.y = 3.5 + .offset * 7 + norm.bar.h / 2) |>
     group_by(group) |>
     mutate(edge.xend = median(edge.x)) |>
     ungroup()
@@ -90,15 +88,15 @@ medam_circle_plot <- function(medamres,
     scale_color_manual(values = setNames(c("#9bd1df", "#f0d091", "#f9aea8"),
                                          c("tgtp", "ssimm", "coabm"))) +
     geom_tile(aes(x = edge.x, y = tile1.y, fill = .data[[measures[1]]]),
-              width = 1, height = 1) +
+              width = 1, height = 0.6) +
     scale_fill_gradient(low = "#f5fbfb", high = "#51b9b2") +
     new_scale_fill() +
     geom_tile(aes(x = edge.x, y = tile2.y, fill = .data[[measures[2]]]),
-              width = 1, height = 1) +
+              width = 1, height = 0.6) +
     scale_fill_gradient(low = "#cbdeef", high = "#1f69da") +
     new_scale_fill() +
     geom_tile(aes(x = edge.x, y = tile3.y, fill = .data[[measures[3]]]),
-              width = 1, height = 1) +
+              width = 1, height = 0.6) +
     scale_fill_gradient(low = "#e0e4f2", high = "#9175c5") +
     new_scale_fill() +
     geom_tile(aes(x = edge.x, y = bar.y, height = norm.bar.h, fill = bar.h),
@@ -109,7 +107,7 @@ medam_circle_plot <- function(medamres,
     geom_text(aes(x = edge.x, y = bar.y + norm.bar.h / 2 + 0.05, label = label,
                   angle = angle, hjust = hjust, size = label_size),
               fontface = "bold", show.legend = FALSE) +
-    scale_size(range = c(2.5, 3)) +
+    scale_size(range = c(3, 3.5)) +
     coord_polar(start = start) +
     scale_x_continuous(expand = expansion(mult = c(0, 0)),
                        limits = c(0, max(pdat$edge.x) + 1)) +
