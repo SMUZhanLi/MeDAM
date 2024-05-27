@@ -67,17 +67,19 @@ get_sankey_data <- function(medamnw, enrichda, branch) {
 #' @param enrichres The result of enrichment analysis.
 #' @param branch One of "target_proteins", "ssim_metabolites" and
 #' "coab_metabolites"
-#' @param termsda The disease related functional items or pathways.
+#' @param disterms The disease related functional terms or pathways.
+#' @param matchkey "Description" or "ID".
 #' @param max_metabo_len A numeric value sets wrap length for labels of
 #' metabolites. It will wrap names longer that 30 characters by default.
-#' @param max_desc_len A numeric value sets wrap length for labels of items.
+#' @param max_desc_len A numeric value sets wrap length for labels of terms.
 #' It will wrap names longer that 30 characters by default.
 #' @importFrom aplot insert_left insert_right
 #' @export
 medam_sankey_plot <- function(medamnw,
                               enrichres,
                               branch,
-                              termsda,
+                              disterms,
+                              matchkey,
                               max_metabo_len = 30,
                               max_desc_len = 30) {
   medam_branch <- c("target_proteins", "ssim_metabolites", "coab_metabolites")
@@ -99,7 +101,8 @@ medam_sankey_plot <- function(medamnw,
   medamnw$nodes <- medamnw$nodes |>
     mutate(name = metabo_wrap(name, max_metabo_len))
   enrichda <- lapply(enrichres, as.data.frame)
-  sankyda <- lapply(seq_len(nrow(termsda)), function(n) {
+  termsda <- match_disterms(enrichres, termsda, matchkey = matchkey)
+  sankyda <- lapply(seq_len(nrow(disterms)), function(n) {
     ont <- termsda[n, "ont"]
     i <- termsda[n, "index"]
     eda <- enrichda[[ont]][i, ]

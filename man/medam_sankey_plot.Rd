@@ -8,7 +8,8 @@ medam_sankey_plot(
   medamnw,
   enrichres,
   branch,
-  termsda,
+  disterms,
+  matchkey,
   max_metabo_len = 30,
   max_desc_len = 30
 )
@@ -21,12 +22,14 @@ medam_sankey_plot(
 \item{branch}{One of "target_proteins", "ssim_metabolites" and
 "coab_metabolites"}
 
-\item{termsda}{The disease related functional items or pathways.}
+\item{disterms}{The disease related functional terms or pathways.}
+
+\item{matchkey}{"Description" or "ID".}
 
 \item{max_metabo_len}{A numeric value sets wrap length for labels of
 metabolites. It will wrap names longer that 30 characters by default.}
 
-\item{max_desc_len}{A numeric value sets wrap length for labels of items.
+\item{max_desc_len}{A numeric value sets wrap length for labels of terms.
 It will wrap names longer that 30 characters by default.}
 }
 \description{
