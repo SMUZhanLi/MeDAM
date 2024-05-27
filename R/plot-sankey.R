@@ -101,7 +101,11 @@ medam_sankey_plot <- function(medamnw,
   medamnw$nodes <- medamnw$nodes |>
     mutate(name = metabo_wrap(name, max_metabo_len))
   enrichda <- lapply(enrichres, as.data.frame)
-  termsda <- match_disterms(enrichres, termsda, matchkey = matchkey)
+  if (inherits(disterms, "character")) {
+    termsda <- match_disterms(enrichres, disterms, matchkey = matchkey)
+  } else {
+    termsda <- disterms
+  }
   sankyda <- lapply(seq_len(nrow(disterms)), function(n) {
     ont <- termsda[n, "ont"]
     i <- termsda[n, "index"]
