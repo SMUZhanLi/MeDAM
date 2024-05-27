@@ -84,7 +84,6 @@ medam_sankey_plot <- function(medamres,
                               max_desc_len = 30) {
   medam_branch <- c("target_proteins", "ssim_metabolites", "coab_metabolites")
   branch <- match.arg(branch, medam_branch)
-
   medamnw <- medamres$network[[metabolite]][[branch]]
   enrichres <- medamres$enrichment[[metabolite]][[branch]]
   if (branch == "target_proteins") {
@@ -109,7 +108,7 @@ medam_sankey_plot <- function(medamres,
   } else {
     termsda <- disterms
   }
-  sankyda <- lapply(seq_len(nrow(disterms)), function(n) {
+  sankyda <- lapply(seq_len(nrow(termsda)), function(n) {
     ont <- termsda[n, "ont"]
     i <- termsda[n, "index"]
     eda <- enrichda[[ont]][i, ]
