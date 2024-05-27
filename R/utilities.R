@@ -85,7 +85,7 @@ norm_min_max <- function(x) {
 match_disterms <- function(enrichres, disterms, matchkey = "ID") {
   lapply(names(enrichres), function(ont) {
     dat <- as.data.frame(enrichres[[ont]])
-    index <- match(disterms[[matchkey]], dat[[matchkey]]) |> na.omit()
+    index <- match(disterms, dat[[matchkey]]) |> na.omit()
     if (length(index) == 0) {
       NULL
     } else {
