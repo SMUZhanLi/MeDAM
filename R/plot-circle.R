@@ -12,10 +12,10 @@
 #' @importFrom stats median
 #' @importFrom tidyr pivot_longer
 #' @importFrom dplyr .data n distinct
-#' @importFrom ggplot2 ggplot aes geom_point geom_text geom_tile
+#' @importFrom ggplot2 ggplot aes geom_point geom_text geom_tile unit
 #' scale_color_manual scale_shape_manual scale_fill_gradient scale_size
-#' coord_polar labs guides guide_legend scale_x_continuous scale_y_continuous
-#' expansion theme element_blank element_text element_rect unit
+#' coord_polar labs guides guide_legend guide_colourbar scale_x_continuous
+#' scale_y_continuous expansion theme element_blank element_text element_rect
 #' @importFrom ggraph geom_edge_diagonal
 #' @importFrom ggnewscale new_scale_color new_scale_fill
 #' @export
@@ -71,6 +71,8 @@ medam_circle_plot <- function(medamres,
                  values_drop_na = TRUE) |>
     mutate(branch = factor(sub("\\.y$", "", branch),
                            levels = c("tgtp", "ssimm", "coabm")))
+  point_cols <- setNames(c("#9bd1df", "#f0d091", "#f9aea8"),
+                         c("tgtp", "ssimm", "coabm"))
   gg <- ggplot(pdat) +
     geom_edge_diagonal(aes(x = edge.x, y = edge.y, xend = edge.xend,
                            yend = edge.yend, circular = circular),
@@ -84,25 +86,31 @@ medam_circle_plot <- function(medamres,
     geom_point(aes(x = edge.x, y = medam.y, shape = branch, color = branch),
                data = medamdat, size = 2.5) +
     scale_shape_manual(values = setNames(c(16, 15, 17),
-                                         c("tgtp", "ssimm", "coabm"))) +
-    scale_color_manual(values = setNames(c("#9bd1df", "#f0d091", "#f9aea8"),
-                                         c("tgtp", "ssimm", "coabm"))) +
+                                         c("tgtp", "ssimm", "coabm")),
+                       guide = guide_legend(order = 1,
+                                            override.aes = list(size = 3))) +
+    scale_color_manual(values = point_cols,
+                       guide = guide_legend(order = 1)) +
     geom_tile(aes(x = edge.x, y = tile1.y, fill = .data[[measures[1]]]),
               width = 1, height = 0.6) +
-    scale_fill_gradient(low = "#f5fbfb", high = "#51b9b2") +
+    scale_fill_gradient(low = "#f5fbfb", high = "#51b9b2",
+                        guide = guide_colourbar(order = 2)) +
     new_scale_fill() +
     geom_tile(aes(x = edge.x, y = tile2.y, fill = .data[[measures[2]]]),
               width = 1, height = 0.6) +
-    scale_fill_gradient(low = "#cbdeef", high = "#1f69da") +
+    scale_fill_gradient(low = "#cbdeef", high = "#1f69da",
+                        guide = guide_colourbar(order = 3)) +
     new_scale_fill() +
     geom_tile(aes(x = edge.x, y = tile3.y, fill = .data[[measures[3]]]),
               width = 1, height = 0.6) +
-    scale_fill_gradient(low = "#e0e4f2", high = "#9175c5") +
+    scale_fill_gradient(low = "#e0e4f2", high = "#9175c5",
+                        guide = guide_colourbar(order = 4)) +
     new_scale_fill() +
     geom_tile(aes(x = edge.x, y = bar.y, height = norm.bar.h, fill = bar.h),
               width = 0.9, alpha = 0.5) +
-    scale_fill_gradient(low = "#fbe6d1", high = "#fe621f") +
-    labs(fill = sort.by) +
+    scale_fill_gradient(name = sort.by, low = "#fbe6d1", high = "#fe621f",
+                        guide = guide_colourbar(order = 5)) +
+    # labs(fill = sort.by) +
     new_scale_fill() +
     geom_text(aes(x = edge.x, y = bar.y + norm.bar.h / 2 + 0.05, label = label,
                   angle = angle, hjust = hjust, size = label_size),
@@ -112,8 +120,8 @@ medam_circle_plot <- function(medamres,
     scale_x_continuous(expand = expansion(mult = c(0, 0)),
                        limits = c(0, max(pdat$edge.x) + 1)) +
     scale_y_continuous(expand = expansion(mult = c(0.1, 0.1))) +
-    guides(color = guide_legend(order = 1),
-           shape = guide_legend(order = 1, override.aes = list(size = 3))) +
+    # guides(color = guide_legend(order = 1),
+    #        shape = guide_legend(order = 1, override.aes = list(size = 3))) +
     theme(
       panel.grid.minor = element_blank(),
       panel.grid.major = element_blank(),
