@@ -96,3 +96,18 @@ match_disterms <- function(enrichres, disterms, matchkey = "ID") {
   }) |>
   do.call(rbind, args = _)
 }
+
+score2rank <- function(score) {
+  rank1 <- sum(score >= 900)
+  rank2 <- sum(score >= 600 & score < 900)
+  rank3 <- sum(score >= 400 & score < 600)
+  rank4 <- sum(score >= 200 & score < 400)
+  rank5 <- sum(score < 200)
+  confidence <- c("highest confidence (score >= 900)",
+                  "high confidence (900 > score >= 600)",
+                  "medium confidence (600 > score >= 400)",
+                  "low confidence (400 > score >= 200)",
+                  "lowest confidence (score < 200)")
+  res <- c(rank1, rank2, rank3, rank4, rank5) |> setNames(confidence)
+  return(res)
+}
