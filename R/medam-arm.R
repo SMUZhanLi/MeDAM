@@ -22,8 +22,9 @@
 #' target compound using \code{stitch_expt_cpi()} (STITCH metabilite-protein
 #' experimental interactions network) required a \code{ecpi_score} (e.g. 700).
 #' @seealso \code{\link{stitch_expt_cpi}}, \code{\link{string_network}}
-#' @return list contained weights of each edge and annotations of each node
-#' as following:
+#' @return list contained weights of each edge, annotations of each node
+#' result of disease-related genes ORA analysis and result of enrichment
+#' analysis as following:
 #'
 #' the tibble \code{edges} with fields:
 #' * \code{node1, node2} protein- or compound-nodes in the network
@@ -48,7 +49,7 @@
 #' * \code{name} common synonyms of compound or protein
 #' * \code{external} external id of compound (PubChem cid) or protein
 #' (entrez gene id)
-#' * \code{annotion} description of compound or protein
+#' * \code{description} description of compound or protein
 #' @references Huimin Zheng, et al. (2022). In silico method to maximise the
 #' biological potential of understudied metabolomic biomarkers: a study in
 #' pre-eclampsia.
@@ -79,7 +80,7 @@ medam_target_proteins <- function(medam,
   if (length(stringid) > 0) {
     res <- string_network(medam, stringid, score)
     res$drg <- drgene_ora(res$nodes, drg, universe)
-    res$enrich <- enrichment_analysis(res$nodes, padj, pcutoff, ont)
+    res$enrichment <- enrichment_analysis(res$nodes, padj, pcutoff, ont)
   } else {
     res <- NULL
   }
@@ -117,8 +118,9 @@ medam_target_proteins <- function(medam,
 #' while length of \code{compound} is 1, \code{use_wgcna} is TRUE and
 #' \code{abundance} is not null.
 #' @seealso \code{\link{wgcna_analysis}}, \code{\link{stitch_network}}
-#' @return list contained weights of each edge and annotations of each node
-#' as following:
+#' @return list contained weights of each edge, annotations of each node
+#' result of disease-related genes ORA analysis and result of enrichment
+#' analysis as following:
 #'
 #' the tibble \code{edges} with fields:
 #' * \code{node1, node2} protein- or compound-nodes in the network
@@ -143,7 +145,7 @@ medam_target_proteins <- function(medam,
 #' * \code{name} common synonyms of compound or protein
 #' * \code{external} external id of compound (PubChem cid) or protein
 #' (entrez gene id)
-#' * \code{annotion} description of compound or protein
+#' * \code{description} description of compound or protein
 #' @references Huimin Zheng, et al. (2022). In silico method to maximise the
 #' biological potential of understudied metabolomic biomarkers: a study in
 #' pre-eclampsia.
@@ -174,7 +176,7 @@ medam_coab_metabolites <- function(medam,
   if (length(stitchid) > 0) {
     res <- stitch_network(medam, stitchid, score = score)
     res$drg <- drgene_ora(res$nodes, drg, universe)
-    res$enrich <- enrichment_analysis(res$nodes, padj, pcutoff, ont)
+    res$enrichment <- enrichment_analysis(res$nodes, padj, pcutoff, ont)
   } else {
     res <- NULL
   }
@@ -201,8 +203,9 @@ medam_coab_metabolites <- function(medam,
 #' structure for target compound while length of \code{compound} is 1 and
 #' \code{use.ssim_search} is TRUE.
 #' @seealso \code{\link{ssim_search}}, \code{\link{stitch_network}}
-#' @return list contained weights of each edge and annotations of each node
-#' as following:
+#' @return list contained weights of each edge, annotations of each node
+#' result of disease-related genes ORA analysis and result of enrichment
+#' analysis as following:
 #'
 #' the tibble \code{edges} with fields:
 #' * \code{node1, node2} protein- or compound-nodes in the network
@@ -227,7 +230,7 @@ medam_coab_metabolites <- function(medam,
 #' * \code{name} common synonyms of compound or protein
 #' * \code{external} external id of compound (PubChem cid) or protein
 #' (entrez gene id)
-#' * \code{annotion} description of compound or protein
+#' * \code{description} description of compound or protein
 #' @references Huimin Zheng, et al. (2022). In silico method to maximise the
 #' biological potential of understudied metabolomic biomarkers: a study in
 #' pre-eclampsia.
@@ -252,7 +255,7 @@ medam_ssim_metabolites <- function(medam,
   if (length(stitchid) > 0) {
     res <- stitch_network(medam, stitchid, score = score)
     res$drg <- drgene_ora(res$nodes, drg, universe)
-    res$enrich <- enrichment_analysis(res$nodes, padj, pcutoff, ont)
+    res$enrichment <- enrichment_analysis(res$nodes, padj, pcutoff, ont)
   } else {
     res <- NULL
   }

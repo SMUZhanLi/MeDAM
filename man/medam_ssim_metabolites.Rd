@@ -40,8 +40,9 @@ For example, background of homo sapiens is 21306.}
 \item{ont}{c("BP", "MF", "CC", "KEGG", "WikiPathways", "Reactome", "DO").}
 }
 \value{
-list contained weights of each edge and annotations of each node
-as following:
+list contained weights of each edge, annotations of each node
+result of disease-related genes ORA analysis and result of enrichment
+analysis as following:
 
 the tibble \code{edges} with fields:
 \itemize{
@@ -71,7 +72,7 @@ the tibble \code{nodes} with fields:
 \item \code{name} common synonyms of compound or protein
 \item \code{external} external id of compound (PubChem cid) or protein
 (entrez gene id)
-\item \code{annotion} description of compound or protein
+\item \code{description} description of compound or protein
 }
 }
 \description{
