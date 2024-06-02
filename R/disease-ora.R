@@ -26,7 +26,8 @@ drgene_search <- function(medam, doid) {
     pull(entrezid) |>
     strsplit(split = ",") |>
     unlist()
-  drg <- suppressWarnings(bitr(drg, "ENTREZID", "SYMBOL", org.Hs.eg.db))
+  drg <- suppressWarnings(
+    bitr(drg, "ENTREZID", "SYMBOL", org.Hs.eg.db, drop = FALSE))
   drg <- as_tibble(drg)
   return(drg)
 }
