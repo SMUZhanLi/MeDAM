@@ -24,6 +24,15 @@ ssim_search <- function(medam, cid) {
   c2ssimcid <- medam |>
     dbquery("cid2ssimcid", cid %in% !!cid) |>
     separate_longer_delim(ssimcid, delim = ",") |>
-    mutate(stitch = cid2stitchid(ssimcid))
+    mutate(stitch = cid2stitchid(ssimcid)) |>
+    filter(!is.na(stitch))
+  ssimm_stitchid <- c2ssimcid |> pull(stitch)
+  simm2cheminfo <- medam |>
+    dbquery("stitchv5compoundinfo", stitchv5 %in% !!ssimm_stitchid) |>
+    rename(stitch = 1) |>
+    select(stitch, name, description)
+  c2ssimcid <- c2ssimcid |>
+    left_join(simm2cheminfo, by = "stitch") |>
+    select(cid, ssimcid, stitch, name, description)
   return(c2ssimcid)
 }
