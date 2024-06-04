@@ -74,7 +74,9 @@ medam_target_proteins <- function(medam,
     stringid <- c(stringid, ecpi_prot)
   }
   if (!is.null(protein)) {
-    prior_prot <- protein2stringid(medam, protein) |> pull(string)
+    prior_prot <- protein2stringid(medam, protein) |>
+      pull(string) |>
+      unique()
     stringid <- c(stringid, prior_prot)
   }
   if (length(stringid) > 0) {
