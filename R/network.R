@@ -79,17 +79,18 @@ string_network <- function(medam, stringid, score = 700) {
             node1 %in% !!newprot,
             node2 %in% !!newprot,
             score >= !!score)
-  ppi <- rbind(ppi, ppi2) |>
+  edges <- rbind(ppi, ppi2) |>
     add_column(prediction = 0, .before = "cooccurence") |>
     mutate(type = "ppi",
            across(where(is.integer), \(x) if_else(is.na(x), 0, x)))
 
-  protinfo <- medam |>
+  nodes <- medam |>
     dbquery("stringv12proteininfo", stringv12 %in% allprot) |>
     rename(id = 1, external = 3) |>
     mutate(type = "protein",
            network = if_else(id %in% stringid, "input", "output"))
-  res <- list(edges = ppi, nodes = protinfo)
+  edges <- edges_id2name(edges, nodes)
+  res <- list(edges = edges, nodes = nodes)
   return(res)
 }
 
@@ -167,6 +168,7 @@ stitch_network <- function(medam, stitchid, score = 700) {
            "textmining", "score", "evidence", "type") |>
     mutate(across(where(is.integer), \(x) if_else(is.na(x), 0, x)))
   nodes <- bind_rows(cheminfo, protinfo)
+  edges <- edges_id2name(edges, nodes)
   res <- list(edges = edges, nodes = nodes)
   return(res)
 }

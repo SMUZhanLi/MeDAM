@@ -89,7 +89,6 @@ medam_target_proteins <- function(medam,
   return(res)
 }
 
-
 #' @title The co-abundance metabolites branch in MeDAM pipeline
 #' @description the branch 1 of second arm of pipeline in medam. Ref: fig 1.C in
 #' Huimin Zheng, et al. (2022).

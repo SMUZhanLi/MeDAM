@@ -97,6 +97,7 @@ match_disterms <- function(enrichres, disterms, matchkey = "ID") {
   do.call(rbind, args = _)
 }
 
+#' @keywords internal
 score2rank <- function(score) {
   rank1 <- sum(score >= 900)
   rank2 <- sum(score >= 600 & score < 900)
@@ -110,4 +111,16 @@ score2rank <- function(score) {
                   "lowest confidence (score < 200)")
   res <- c(rank1, rank2, rank3, rank4, rank5) |> setNames(confidence)
   return(res)
+}
+
+#' @keywords internal
+edges_id2name <- function(edges, nodes) {
+  new_nodes <- nodes |> select(id, name)
+  new_edges <- edges |>
+    left_join(new_nodes, by = c("node1" = "id")) |>
+    rename(name1 = name) |>
+    left_join(new_nodes, by = c("node2" = "id")) |>
+    rename(name2 = name) |>
+    select(1, 2, 14, 15, 3:13)
+  return(new_edges)
 }

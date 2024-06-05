@@ -85,6 +85,7 @@ medam_sankey_plot <- function(medamres,
   medam_branch <- c("target_proteins", "ssim_metabolites", "coab_metabolites")
   branch <- match.arg(branch, medam_branch)
   medamnw <- medamres$network[[metabolite]][[branch]]
+  medamnw$edges <- medamnw$edges |> select(-name1, -name2)
   enrichres <- medamres$enrichment[[metabolite]][[branch]]
   if (branch == "target_proteins") {
     edges.type <- "ppi"
@@ -146,10 +147,13 @@ medam_sankey_plot <- function(medamres,
     left_join(degreeda, by = "id") |>
     group_by(level) |>
     arrange(degree) |>
-    mutate(y = rm_head_tail(seq(1, max_freq, length.out = if_else(n() == max_freq, max_freq + 2, n() + 2)), 1)) |>
+    mutate(y = rm_head_tail(
+      seq(1,
+          max_freq,
+          length.out = if_else(n() == max_freq,max_freq + 2, n() + 2)), 1)) |>
     ungroup() |>
     mutate(x = level, `Node type` = node_type[level + 1])
-  
+
   string_edges_levels <- c(
     "itself", "experiment", "neighborhood", "fusion",
     "prediction", "cooccurence", "coexpression", "database", "textmining"
