@@ -34,10 +34,10 @@ Imports:
     scales,
     enrichplot,
     RSQLite,
-    pool
+    pool (>= 1.0.1.9000)
 Remotes:
     SMUZhanLi/roplsMini
-    rstudio/pool (>= 1.0.1.9000)
+    rstudio/pool
 LinkingTo:
     Rcpp,
     RcppArmadillo
