@@ -18,7 +18,6 @@ Imports:
     tidyr,
     dplyr,
     WGCNA,
-    roplsMini (>= 1.0),
     digest,
     tibble,
     flashClust,
@@ -26,7 +25,7 @@ Imports:
     pROC,
     stringr,
     org.Hs.eg.db,
-    Rcpp (>= 1.0.12),
+    Rcpp,
     ggplot2,
     ggraph,
     ggnewscale,
@@ -34,10 +33,10 @@ Imports:
     scales,
     enrichplot,
     RSQLite,
-    pool (>= 1.0.1.9000)
+    pool,
+    roplsMini (>= 1.0)
 Remotes:
-    SMUZhanLi/roplsMini,
-    rstudio/pool
+    SMUZhanLi/roplsMini
 LinkingTo:
     Rcpp,
     RcppArmadillo
