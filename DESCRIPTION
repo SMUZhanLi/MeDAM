@@ -36,7 +36,7 @@ Imports:
     RSQLite,
     pool (>= 1.0.1.9000)
 Remotes:
-    SMUZhanLi/roplsMini
+    SMUZhanLi/roplsMini,
     rstudio/pool
 LinkingTo:
     Rcpp,
