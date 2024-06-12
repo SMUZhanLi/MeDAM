@@ -26,7 +26,7 @@ dbquery <- function(dbconn, dbtbl, ...) {
 }
 
 #' @title MeDAM dbPool connections
-#' @description Create a pool of database connections for MeDAM.db
+#' @description Create a pool of database connections for MeDAM.db.
 #' @param dbname MeDAM.db
 #' @importFrom RSQLite SQLite
 #' @importFrom pool dbPool
@@ -36,7 +36,6 @@ dbquery <- function(dbconn, dbtbl, ...) {
 #' medamdb <- medamdbPool(dbname = "MeDAM.db")
 #' }
 #' @export
-
 medamdbPool <- function(dbname) {
-  dbPool(drv = RSQLite::SQLite(), dbname = dbname)
+  dbPool(drv = SQLite(), dbname = dbname)
 }

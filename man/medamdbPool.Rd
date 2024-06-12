@@ -13,7 +13,7 @@ medamdbPool(dbname)
 SQLiteConnection objects
 }
 \description{
-Create a pool of database connections for MeDAM.db
+Create a pool of database connections for MeDAM.db.
 }
 \examples{
 \dontrun{
