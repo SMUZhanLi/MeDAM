@@ -32,11 +32,12 @@ Imports:
     ggnewscale,
     aplot,
     scales,
-    enrichplot
+    enrichplot,
+    RSQLite,
+    pool
 Remotes:
     SMUZhanLi/roplsMini
-Suggests:
-    pool (>= 1.0.1.9000)
+    rstudio/pool (>= 1.0.1.9000)
 LinkingTo:
     Rcpp,
     RcppArmadillo

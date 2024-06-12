@@ -23,11 +23,9 @@ Query a database using dplyr and pool.
 }
 \examples{
 \dontrun{
-# remotes::install_github("rstudio/pool")
-library(pool)
 library(dplyr)
 
-medamdb <- dbPool(drv = RSQLite::SQLite(), dbname = "MeDAM.db")
+medamdb <- medamdbPool("MeDAM.db")
 disease <- c("Pre-eclampsia", "Endometriosis")
 medamdb |>
   dbquery("disease2doid", disease \%in\% !!disease)
