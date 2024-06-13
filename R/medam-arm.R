@@ -247,11 +247,15 @@ medam_ssim_metabolites <- function(medam,
                                    ont = c("BP", "MF", "CC", "KEGG",
                                            "WikiPathways", "Reactome", "DO")) {
   c2cid <- compound2cid(medam, compound)
-  if (length(compound) == 1 && search_ssim) {
-    c2ssimcid <- ssim_search(medam, c2cid$cid)
-    stitchid <- pull(c2ssimcid, stitch)
+  if (nrow(c2cid) > 0) {
+    if (search_ssim) {
+      c2ssimcid <- ssim_search(medam, unique(c2cid$cid))
+      stitchid <- pull(c2ssimcid, stitch)
+    } else {
+      stitchid <- pull(c2cid, stitch)
+    }
   } else {
-    stitchid <- pull(c2cid, stitch)
+    stitchid <- c()
   }
   if (length(stitchid) > 0) {
     res <- stitch_network(medam, stitchid, score = score)
