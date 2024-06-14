@@ -126,13 +126,18 @@ protein2stringid <- function(medam, protein) {
 #' }
 #' @export
 disease2doid <-  function(medam, disease, fixed = TRUE) {
-  if (fixed) {
+  if (grepl("DOID:\\d+", disease)) {
     d2doid <- medam |>
-      dbquery("disease2doid", disease == !!disease)
+      dbquery("disease2doid", doid == !!disease)
   } else {
-    disease <- paste0("%", disease, "%")
-    d2doid <- medam |>
-      dbquery("disease2doid", str_like(disease, !!disease))
+    if (fixed) {
+      d2doid <- medam |>
+        dbquery("disease2doid", disease == !!disease)
+    } else {
+      disease <- paste0("%", disease, "%")
+      d2doid <- medam |>
+        dbquery("disease2doid", str_like(disease, !!disease))
+    }
   }
   return(d2doid)
 }
