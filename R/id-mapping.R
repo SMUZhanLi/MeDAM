@@ -94,7 +94,13 @@ protein2stringid <- function(medam, protein) {
   prot2stringid <- medam |>
     dbquery("stringv12protein2stringid",
             protein %in% !!protein) |>
-    rename(string = 2)
+    rename(string = 2) |>
+    mutate(tmpgroup = toupper(protein)) |>
+    group_by(tmpgroup) |>
+    arrange(string, .by_group = TRUE) |>
+    slice_head(n = 1) |>
+    ungroup() |>
+    select(-tmpgroup)
   return(prot2stringid)
 }
 
