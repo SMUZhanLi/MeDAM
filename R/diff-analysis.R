@@ -34,7 +34,7 @@
 #' * \code{vip} Variable Importance in Projection (VIP) of (O)PLS-DA module
 #' * \code{auc} AUC of ROC curve analysis
 #' * \code{pval, padj} P value and p value adjusted of t.test (or wilcox.test)
-#' * \code{fc, log2fc, fc_direct} Fold change (FC), log2(FC) and direaction of
+#' * \code{fc, log2fc, fc_direct} Fold change (FC), log2(FC) and direction of
 #' FC (e.g., case/control).
 #' * \code{significant} 1 for significantly differential metabolites, or 0 for
 #' not significant.

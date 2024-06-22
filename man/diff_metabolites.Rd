@@ -61,7 +61,7 @@ a tibble with fields:
 \item \code{vip} Variable Importance in Projection (VIP) of (O)PLS-DA module
 \item \code{auc} AUC of ROC curve analysis
 \item \code{pval, padj} P value and p value adjusted of t.test (or wilcox.test)
-\item \code{fc, log2fc, fc_direct} Fold change (FC), log2(FC) and direaction of
+\item \code{fc, log2fc, fc_direct} Fold change (FC), log2(FC) and direction of
 FC (e.g., case/control).
 \item \code{significant} 1 for significantly differential metabolites, or 0 for
 not significant.
