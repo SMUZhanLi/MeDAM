@@ -156,7 +156,7 @@ medam_batch_manual <- function(medam,
                            nthreads = 10)
   def_wgcna_params <- modifyList(def_wgcna_params, wgcna_params)
   daa <- tibble(metabolite = metabolites, significant = 1)
-  if (is.null(wgcna) || is.null(def_wgcna_params$abundance)) {
+  if (!is.null(wgcna) || !is.null(def_wgcna_params$abundance)) {
     if (!is.null(wgcna)) {
       wgcna <- setNames(wgcna, c("metabolite", "module"))
     } else {
