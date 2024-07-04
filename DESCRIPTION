@@ -17,6 +17,7 @@ Imports:
     stats,
     tidyr,
     dplyr,
+    dbplyr,
     WGCNA,
     digest,
     tibble,
