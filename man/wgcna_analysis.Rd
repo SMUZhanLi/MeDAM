@@ -15,7 +15,7 @@ wgcna_analysis(
 }
 \arguments{
 \item{abundance}{Abundance table, a matrix or data frame in which columns are
-metabolites and rows ar samples.}
+metabolites and rows are samples.}
 
 \item{networkType}{Network type, one of "signed", "unsigned" and
 "signed hybrid".}

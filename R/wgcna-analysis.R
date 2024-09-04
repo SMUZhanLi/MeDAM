@@ -2,7 +2,7 @@
 #' @description Identify abundance-correlated metabolites (i.e., consistency
 #' abundance module) using weighted correlation network analysis (WGCNA).
 #' @param abundance Abundance table, a matrix or data frame in which columns are
-#' metabolites and rows ar samples.
+#' metabolites and rows are samples.
 #' @param networkType Network type, one of "signed", "unsigned" and
 #' "signed hybrid".
 #' @param corMethod Correlation algorithm for network construction, e.g.,
