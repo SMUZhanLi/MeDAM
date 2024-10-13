@@ -1,3 +1,5 @@
+// This was from https://github.com/do-somethings-haha/multi-threaded_calculate_unsigned_TOM_from_unsigned_or_signed_Adjacency_Matrix_of_WGCNA
+// Reference: Shuai, M., He, D. & Chen, X. (2021). Optimizing weighted gene co-expression network analysis with a multi-threaded calculation of the topological overlap matrix. Statistical Applications in Genetics and Molecular Biology, 20(4-6), 145-153.
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <cmath>
 #include <omp.h>
