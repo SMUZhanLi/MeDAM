@@ -17,7 +17,6 @@ Imports:
     stats,
     tidyr,
     dplyr,
-    dbplyr,
     WGCNA,
     digest,
     tibble,
@@ -41,3 +40,5 @@ Remotes:
 LinkingTo:
     Rcpp,
     RcppArmadillo
+Suggests: 
+    dbplyr
