@@ -39,6 +39,7 @@
 #' @return a list contained:
 #' * \code{daa} Result of the differential abundance analysis for metabolomics.
 #' See \code{\link{diff_metabolites}} and \code{\link{wgcna_analysis}}.
+#' * \code{cid2doid} Compound-disease (cid-doid) association.
 #' * \code{network} Interaction network. See \code{\link{string_network}} and
 #' \code{\link{stitch_network}}.
 #' * \code{drgora} Disease-related genes ORA. See \code{\link{drgene_ora}}
@@ -94,6 +95,7 @@ medam_batch <- function(medam,
   daa <- daa |>
     left_join(wgcna, by = "metabolite")
   c2cid <- compound2cid(medam, colnames(abundance))
+  uniq_cid <- c2cid |> pull(cid) |> na.omit() |> unique()
   daa <- daa |>
     left_join(c2cid, by = c("metabolite" = "compound"))
   tgtp_nw <- medam_tgtp_batch(medam, daa, score, ecpi_score)
@@ -106,10 +108,12 @@ medam_batch <- function(medam,
     } else {
       doid <- disease2doid(medam, disease) |> pull(doid)
     }
+    cid2doid <- drcid_search(medam, cid = uniq_cid, doid = doid)
     drg <- drgene_search(medam, doid)
     eg <- pull(drg, ENTREZID)
     disease <- list(name = disease, doid = doid, drg = drg)
   } else {
+    cid2doid <- NULL
     eg <- disease
     disease <- list(name = NULL, doid = NULL, drg = tibble(ENTREZID = eg))
   }
@@ -119,8 +123,8 @@ medam_batch <- function(medam,
   all_drgora <- tgtp_drgora |>
     left_join(ssimm_drgora, by = "metabolite") |>
     left_join(coabm_drgora, by = "metabolite")
-  res <- list(daa = daa, network = all_network, drgora = all_drgora,
-              disease = disease, enrichment = NULL)
+  res <- list(daa = daa, cid2doid = cid2doid, network = all_network,
+              drgora = all_drgora, disease = disease, enrichment = NULL)
   return(res)
 }
 
@@ -166,9 +170,10 @@ medam_batch_manual <- function(medam,
       left_join(daa, by = "metabolite") |>
       mutate(significant = if_else(is.na(significant), 0, 1))
   }
+  c2cid <- compound2cid(medam, daa$metabolite)
+  uniq_cid <- c2cid |> pull(cid) |> na.omit() |> unique()
   daa <- daa |>
-    left_join(compound2cid(medam, daa$metabolite),
-              by = c("metabolite" = "compound"))
+    left_join(c2cid, by = c("metabolite" = "compound"))
   tgtp_nw <- medam_tgtp_batch(medam, daa, score, ecpi_score)
   ssimm_nw <- medam_ssimm_batch(medam, daa, score)
   if (!is.null(wgcna)) {
@@ -183,10 +188,12 @@ medam_batch_manual <- function(medam,
     } else {
       doid <- disease2doid(medam, disease) |> pull(doid)
     }
+    cid2doid <- drcid_search(medam, cid = uniq_cid, doid = doid)
     drg <- drgene_search(medam, doid)
     eg <- pull(drg, ENTREZID)
     disease <- list(name = disease, doid = doid, drg = drg)
   } else {
+    cid2doid <- NULL
     eg <- disease
     disease <- list(name = NULL, doid = NULL, drg = tibble(ENTREZID = eg))
   }
@@ -202,8 +209,8 @@ medam_batch_manual <- function(medam,
   all_drgora <- all_drgora <- tgtp_drgora |>
     left_join(ssimm_drgora, by = "metabolite") |>
     left_join(coabm_drgora, by = "metabolite")
-  res <- list(daa = daa, network = all_network, drgora = all_drgora,
-              disease = disease, enrichment = NULL)
+  res <- list(daa = daa, cid2doid = cid2doid, network = all_network,
+              drgora = all_drgora, disease = disease, enrichment = NULL)
   return(res)
 }
 

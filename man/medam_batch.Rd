@@ -98,6 +98,7 @@ a list contained:
 \itemize{
 \item \code{daa} Result of the differential abundance analysis for metabolomics.
 See \code{\link{diff_metabolites}} and \code{\link{wgcna_analysis}}.
+\item \code{cid2doid} Compound-disease (cid-doid) association.
 \item \code{network} Interaction network. See \code{\link{string_network}} and
 \code{\link{stitch_network}}.
 \item \code{drgora} Disease-related genes ORA. See \code{\link{drgene_ora}}
