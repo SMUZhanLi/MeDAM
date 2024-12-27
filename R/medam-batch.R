@@ -109,6 +109,10 @@ medam_batch <- function(medam,
       doid <- disease2doid(medam, disease) |> pull(doid)
     }
     cid2doid <- drcid_search(medam, cid = uniq_cid, doid = doid)
+    cid2doid <- daa |>
+      select(metabolite, cid) |>
+      right_join(cid2doid, by = "cid", relationship = "many-to-many") |>
+      arrange(as.integer(cid), as.integer(sub("^DOID:", "", doid)))
     drg <- drgene_search(medam, doid)
     eg <- pull(drg, ENTREZID)
     disease <- list(name = disease, doid = doid, drg = drg)
@@ -189,6 +193,10 @@ medam_batch_manual <- function(medam,
       doid <- disease2doid(medam, disease) |> pull(doid)
     }
     cid2doid <- drcid_search(medam, cid = uniq_cid, doid = doid)
+    cid2doid <- daa |>
+      select(metabolite, cid) |>
+      right_join(cid2doid, by = "cid", relationship = "many-to-many") |>
+      arrange(as.integer(cid), as.integer(sub("^DOID:", "", doid)))
     drg <- drgene_search(medam, doid)
     eg <- pull(drg, ENTREZID)
     disease <- list(name = disease, doid = doid, drg = drg)
