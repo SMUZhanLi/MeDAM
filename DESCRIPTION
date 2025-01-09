@@ -1,8 +1,10 @@
 Package: MeDAM
 Title: extrapolation of potential Metabolite-Disease Associations by Mining biomedical knowledge
 Version: 1.0
-Authors@R: person(given = "Li", family = "Zhan", email = "smu18575877413@gmail.com",
-  role = c("aut", "cre"), comment = c(ORCID = "0009-0003-7470-7586"))
+Authors@R: c(
+  person(given = "Li", family = "Zhan", email = "smu18575877413@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0009-0003-7470-7586")),
+  person(given = "Guangchuang", family = "Yu", email = "guangchuangyu@gmail.com", role = c("aut", "ctb"), comment = c(ORCID = "0000-0002-6485-8781")),
+  person(given = "Huimin", family = "Zheng", email = "zhenghuimin91@126.com", role = c("aut", "ctb"), comment = c(ORCID = "0000-0003-3489-0964")))
 Description: MeDAM is a complementary bioinformatic pipeline, which is base on
   biomedical knowledge discovery to effectively infer the potential functions of
   understudied metabolites associated with diseases for further investigation.
@@ -11,34 +13,34 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Depends:
-    R (>= 4.3)
+  R (>= 4.3)
 Imports:
-    clusterProfiler,
-    stats,
-    tidyr,
-    dplyr,
-    WGCNA,
-    digest,
-    tibble,
-    flashClust,
-    dynamicTreeCut,
-    pROC,
-    stringr,
-    org.Hs.eg.db,
-    Rcpp,
-    ggplot2,
-    ggraph,
-    ggnewscale,
-    aplot,
-    scales,
-    enrichplot,
-    RSQLite,
-    pool,
-    roplsMini (>= 1.0)
+  clusterProfiler,
+  stats,
+  tidyr,
+  dplyr,
+  WGCNA,
+  digest,
+  tibble,
+  flashClust,
+  dynamicTreeCut,
+  pROC,
+  stringr,
+  org.Hs.eg.db,
+  Rcpp,
+  ggplot2,
+  ggraph,
+  ggnewscale,
+  aplot,
+  scales,
+  enrichplot,
+  RSQLite,
+  pool,
+  roplsMini (>= 1.0)
 Remotes:
-    SMUZhanLi/roplsMini
+  SMUZhanLi/roplsMini
 LinkingTo:
-    Rcpp,
-    RcppArmadillo
-Suggests: 
-    dbplyr
+  Rcpp,
+  RcppArmadillo
+Suggests:
+  dbplyr
